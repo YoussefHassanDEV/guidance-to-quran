@@ -986,3 +986,86 @@ h2 { font-size: clamp(1.55rem, 5vw, 2.5rem); }
 .float-wa svg { width: 26px; height: 26px; }
 .drawer .panel .btn svg { width: 18px; height: 18px; }
 @media (max-width: 860px) { .hero-scene .chip.c1 { top: 0; bottom: auto; left: 2%; } }
+
+/* ==========================================================================
+   v5 — Art layer: Three.js canvases, lanterns, text reveal, sparkles, curtain
+   ========================================================================== */
+/* Hero canvas is now the particle constellation: show it on every size */
+.hero-canvas { display: block !important; opacity: 1; }
+@media (max-width: 860px) { .hero-canvas { opacity: .85; } }
+.hero { background: radial-gradient(120% 80% at 50% 0%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 60%); }
+[data-theme="dark"] .hero { background: radial-gradient(120% 80% at 50% 0%, #17264a, transparent 60%); }
+
+/* Pattern canvas behind stats */
+.stats { position: relative; }
+.pattern-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; mix-blend-mode: screen; }
+.stats .container { position: relative; z-index: 1; }
+.stats::after { z-index: 0; }
+
+/* Letters canvas in the courses banner */
+.page-hero.photo .banner .letters-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+
+/* Lanterns */
+.lanterns { position: absolute; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+.lantern { position: absolute; top: -8px; width: 54px; transform-origin: 50% 0; animation: swing 4.5s ease-in-out infinite; filter: drop-shadow(0 0 18px rgba(247,183,51,.55)); opacity: .95; }
+.lantern.l1 { left: 6%; } .lantern.l2 { left: 46%; width: 44px; animation-delay: -1.6s; animation-duration: 5.2s; } .lantern.l3 { right: 4%; width: 60px; animation-delay: -3s; }
+@keyframes swing { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@media (max-width: 860px) { .lantern.l2 { display: none; } .lantern { width: 40px; } }
+
+/* Headline letter reveal */
+.split .ch { display: inline-block; opacity: 0; transform: translateY(.6em) rotate(6deg) scale(.8); animation: chIn .7s var(--ease) forwards; }
+@keyframes chIn { to { opacity: 1; transform: none; } }
+.hero h1 { text-shadow: 0 2px 30px color-mix(in srgb, var(--gold) 25%, transparent); }
+.grad-text { background: linear-gradient(90deg, var(--orange), var(--gold), var(--pink), var(--orange)); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; animation: gradFlow 6s linear infinite; }
+@keyframes gradFlow { to { background-position: 300% 0; } }
+
+/* Section titles get a soft aurora glow on reveal */
+.section-head h2 { position: relative; }
+.section-head h2::before { content: ""; position: absolute; inset: -30% -10%; background: radial-gradient(50% 60% at 50% 50%, color-mix(in srgb, var(--gold) 18%, transparent), transparent 70%); z-index: -1; filter: blur(12px); opacity: 0; transition: opacity 1s; }
+.reveal.in h2::before, .reveal.in .section-head h2::before { opacity: 1; }
+
+/* Sparkle cursor trail */
+.spark { position: fixed; pointer-events: none; z-index: 600; font-size: 14px; color: var(--gold); animation: sparkOut .9s ease-out forwards; text-shadow: 0 0 8px rgba(247,183,51,.8); }
+@keyframes sparkOut { 0% { opacity: 1; transform: translate(-50%,-50%) scale(.4) rotate(0); } 100% { opacity: 0; transform: translate(-50%,-120%) scale(1.3) rotate(90deg); } }
+
+/* Page curtain transition */
+.curtain { position: fixed; inset: 0; z-index: 900; pointer-events: none; display: grid; place-items: center; background: linear-gradient(135deg, var(--blue-dark), var(--blue) 60%, var(--orange)); clip-path: circle(0% at 50% 50%); transition: clip-path .55s cubic-bezier(.7,0,.3,1); }
+.curtain.on { clip-path: circle(150% at 50% 50%); pointer-events: auto; }
+.curtain img { width: 90px; animation: bounce 1.2s ease-in-out infinite; filter: drop-shadow(0 10px 20px rgba(0,0,0,.4)); }
+.curtain.leave { clip-path: circle(150% at 50% 50%); transition: none; }
+.curtain.leave.off { clip-path: circle(0% at 50% 50%); transition: clip-path .6s cubic-bezier(.7,0,.3,1) .1s; }
+
+/* Animated dividers (path morph, Chrome/Edge; others see the static wave) */
+.divider svg path { animation: waveMorph 9s ease-in-out infinite alternate; }
+@keyframes waveMorph {
+  from { d: path("M0 40c120 30 240 30 360 10s240-40 360-20 240 50 360 30 240-40 360-10v20H0z"); }
+  to   { d: path("M0 30c120-20 240 40 360 30s240-50 360-10 240 30 360 0 240 20 360 30v20H0z"); }
+}
+
+/* Cards: gradient border glow on hover */
+.card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: linear-gradient(135deg, var(--gold), var(--pink), var(--sky)); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .35s; pointer-events: none; }
+.card:hover::before { opacity: 1; }
+
+/* Buttons: glow pulse on primary CTAs */
+.btn-accent { box-shadow: 0 8px 20px rgba(242,107,43,.35), 0 0 0 0 rgba(247,183,51,.5); animation: shimmer 4s ease infinite, ctaPulse 3s ease-out infinite; }
+@keyframes ctaPulse { 0% { box-shadow: 0 8px 20px rgba(242,107,43,.35), 0 0 0 0 rgba(247,183,51,.55); } 70% { box-shadow: 0 8px 20px rgba(242,107,43,.35), 0 0 0 14px rgba(247,183,51,0); } 100% { box-shadow: 0 8px 20px rgba(242,107,43,.35), 0 0 0 0 rgba(247,183,51,0); } }
+
+/* Stats numbers: gold shine sweep */
+.stats .num { background: linear-gradient(100deg, var(--gold) 30%, #fff 50%, var(--gold) 70%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradFlow 4s linear infinite; }
+
+/* Course covers: slow Ken Burns */
+.course-card .thumb { transition: background-size .8s var(--ease); background-size: 105%; }
+.course-card:hover .thumb { background-size: 118%; }
+
+/* Ticker glow */
+.ticker { box-shadow: inset 0 0 40px color-mix(in srgb, var(--gold) 10%, transparent); }
+
+/* Hero photo frames: subtle glow border */
+.hero-scene .photo { box-shadow: var(--shadow-lg), 0 0 0 1px rgba(247,183,51,.25), 0 0 30px rgba(247,183,51,.12); }
+
+@media (prefers-reduced-motion: reduce) {
+  .split .ch { animation: none; opacity: 1; transform: none; }
+  .grad-text, .stats .num, .btn-accent, .divider svg path, .lantern { animation: none !important; }
+  .curtain { display: none; }
+}
+@media (max-width: 860px) { .lantern { width: 32px; opacity: .85; } .lantern.l1 { left: 2%; } .lantern.l3 { right: 2%; width: 36px; } .hero .badge { margin-top: 1.2rem; } .hero-canvas { opacity: .7; } }

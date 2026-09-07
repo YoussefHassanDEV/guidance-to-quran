@@ -674,6 +674,64 @@
     }
   }
 
+  /* ------------------------------------------------------------------
+     Art layer: headline reveal, lanterns, sparkle trail, page curtain
+  ------------------------------------------------------------------ */
+  function initArt() {
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Letter-by-letter hero headline (keeps inner spans like .wavy / .grad-text intact)
+    const h1 = $(".hero h1");
+    if (h1 && !reduce) {
+      let i = 0;
+      const walk = (node) => {
+        [...node.childNodes].forEach((n) => {
+          if (n.nodeType === 3) {
+            const frag = document.createDocumentFragment();
+            [...n.textContent].forEach((ch) => { if (ch === " ") { frag.appendChild(document.createTextNode(" ")); return; } const s = document.createElement("span"); s.className = "ch"; s.textContent = ch; s.style.animationDelay = `${0.15 + i++ * 0.03}s`; frag.appendChild(s); });
+            n.replaceWith(frag);
+          } else if (n.nodeType === 1) walk(n);
+        });
+      };
+      walk(h1); h1.classList.add("split");
+    }
+
+    // Lanterns in the hero
+    const hero = $(".hero");
+    if (hero) { const l = document.createElement("div"); l.className = "lanterns"; l.setAttribute("aria-hidden", "true"); l.innerHTML = '<img class="lantern l1" src="assets/img/lantern.svg" alt=""><img class="lantern l2" src="assets/img/lantern.svg" alt=""><img class="lantern l3" src="assets/img/lantern.svg" alt="">'; hero.appendChild(l); }
+
+    // Sparkle trail (desktop, fine pointer)
+    if (matchMedia("(hover: hover) and (pointer: fine)").matches && !reduce) {
+      let last = 0; const glyphs = ["✦", "✧", "★", "✩"];
+      window.addEventListener("pointermove", (e) => {
+        const now = performance.now(); if (now - last < 70) return; last = now;
+        const s = document.createElement("span"); s.className = "spark"; s.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+        s.style.left = e.clientX + (Math.random() * 16 - 8) + "px"; s.style.top = e.clientY + (Math.random() * 16 - 8) + "px";
+        s.style.color = ["#f7b733", "#ff6b9d", "#7dd3fc", "#fff"][Math.floor(Math.random() * 4)];
+        document.body.appendChild(s); setTimeout(() => s.remove(), 900);
+      }, { passive: true });
+    }
+
+    // Curtain page transition for internal navigations
+    if (!reduce) {
+      const c = document.createElement("div"); c.className = "curtain leave"; c.innerHTML = '<img src="assets/img/mascot-boy.svg" alt="">'; document.body.appendChild(c);
+      requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add("off")));
+      setTimeout(() => { c.classList.remove("leave", "off"); }, 900);
+      document.addEventListener("click", (e) => {
+        const a = e.target.closest("a[href]"); if (!a) return;
+        const href = a.getAttribute("href");
+        if (!href || href.startsWith("#") || a.target === "_blank" || /^(mailto|tel|https?):/.test(href) || e.metaKey || e.ctrlKey || e.shiftKey) return;
+        if (!/\.html(\?|#|$)/.test(href)) return;
+        // same-page hash links inside the current file: let the smooth-scroll handler take it
+        const cur = location.pathname.split("/").pop() || "index.html";
+        if (href.split(/[?#]/)[0] === cur && href.includes("#")) return;
+        e.preventDefault(); c.classList.add("on");
+        setTimeout(() => { location.href = href; }, 520);
+      });
+      window.addEventListener("pageshow", (e) => { if (e.persisted) c.classList.remove("on"); });
+    }
+  }
+
   function initAvatars() {
     $$("[data-avatar]").forEach((el) => { const img = new Image(); img.alt = ""; img.width = 120; img.height = 120; img.loading = "lazy"; img.src = avatar(el.dataset.avatar, el.dataset.style || "adventurer"); el.textContent = ""; el.appendChild(img); });
     $$("[data-photo]").forEach((el) => { const id = el.dataset.photo, w = +el.dataset.w || 900; if (el.tagName === "IMG") el.src = photo(id, w); else el.style.backgroundImage = `url('${photo(id, w)}')`; });
@@ -686,7 +744,7 @@
     renderHeader(); renderFooter();
     initAvatars();
     initCourses(); initPricing(); initTestimonials(); initForm();
-    initReveal(); initCounters(); initEffects(); initUX();
+    initReveal(); initCounters(); initEffects(); initUX(); initArt();
     // Smooth-scroll for in-page anchors with sticky offset
     document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const y = t.getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: y, behavior: "smooth" }); } });
   });
