@@ -548,13 +548,14 @@
 
     // Shared lightbox (gallery photos + course covers)
     const lb = document.createElement("div"); lb.className = "lightbox"; lb.setAttribute("role", "dialog"); lb.setAttribute("aria-label", "Photo viewer");
-    lb.innerHTML = `<figure><img alt=""><figcaption class="cap"><span class="cap-text"></span><span class="cap-actions"></span></figcaption></figure><button class="prev" aria-label="Previous">‹</button><button class="next" aria-label="Next">›</button><button class="close" aria-label="Close">×</button><div class="counter"></div>`;
+    lb.innerHTML = `<figure><img alt=""><p class="lb-quote"></p><figcaption class="cap"><span class="cap-text"></span><span class="cap-actions"></span></figcaption></figure><button class="prev" aria-label="Previous">‹</button><button class="next" aria-label="Next">›</button><button class="close" aria-label="Close">×</button><div class="counter"></div>`;
     document.body.appendChild(lb);
     let items = [], idx = 0, lastFocus = null;
     const render = () => {
       const it = items[idx], img = $("img", lb);
       img.src = it.src; img.alt = it.alt || "";
       $("figure", lb).className = it.cls || "";
+      const q = $(".lb-quote", lb); q.textContent = it.quote || ""; q.hidden = !it.quote;
       $(".cap-text", lb).textContent = it.cap || "";
       $(".cap-actions", lb).innerHTML = it.actions || "";
       $(".counter", lb).textContent = items.length > 1 ? `${idx + 1} / ${items.length}` : "";
@@ -624,8 +625,24 @@
         av.addEventListener("click", () => openLb(staffItems, i));
         av.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(staffItems, i); } });
       });
-      if (!posts.length) lb.addEventListener("click", (e) => { if (e.target.closest("[data-lb-link]")) hide(); });
     }
+
+    // Testimonial avatars: portrait + full quote
+    const testis = $$(".testi");
+    if (testis.length) {
+      const testiItems = testis.map((t) => {
+        const name = $(".who strong", t)?.textContent || "", where = $(".who span", t)?.textContent || "", quote = $("blockquote", t)?.textContent.trim() || "", av = $(".who .av", t);
+        return { src: avatar(av?.dataset.avatar || name, av?.dataset.style || "big-smile"), alt: name, cls: "avatar-view", cap: `${name} · ${where}`, quote: `“${quote}”`,
+          actions: `<a class="btn btn-accent btn-sm" href="free-trial.html" data-lb-link>Start your child's story</a>` };
+      });
+      testis.forEach((t, i) => {
+        const av = $(".who .av", t); if (!av) return;
+        av.tabIndex = 0; av.setAttribute("role", "button"); av.setAttribute("aria-label", `View ${$(".who strong", t)?.textContent || "student"}`); av.style.cursor = "zoom-in";
+        av.addEventListener("click", () => openLb(testiItems, i));
+        av.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(testiItems, i); } });
+      });
+    }
+    if (!posts.length) lb.addEventListener("click", (e) => { if (e.target.closest("[data-lb-link]")) hide(); });
 
     // Testimonial dots
     const track = $(".testi-track");

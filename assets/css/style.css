@@ -811,3 +811,11 @@ body { overflow-x: hidden; }
 .faculty-card .avatar { position: relative; overflow: visible; }
 .faculty-card .avatar img { border-radius: 50%; }
 .faculty-card:hover .avatar::after, .faculty-card .avatar:focus-visible::after { opacity: 1; transform: none; }
+
+/* Testimonial lightbox quote */
+.lightbox .lb-quote { margin: 0; max-width: 640px; text-align: center; color: #fff; font-style: italic; font-size: 1.1rem; line-height: 1.6; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
+.lightbox .lb-quote[hidden] { display: none; }
+.lightbox figure.avatar-view:has(.lb-quote:not([hidden])) img { width: min(50vw, 260px); height: min(50vw, 260px); }
+.testi .who .av { position: relative; }
+.testi .who .av:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.testi:hover .who .av { transform: scale(1.08); transition: transform .25s var(--ease); }
