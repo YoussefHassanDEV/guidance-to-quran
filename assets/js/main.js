@@ -138,6 +138,17 @@
   const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
   const waLink = (msg) => `https://wa.me/${SITE.phoneIntl}?text=${encodeURIComponent(msg)}`;
 
+  /* Keep Tab inside an open overlay (drawer / modal / lightbox) */
+  const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  function trapTab(e, container) {
+    if (e.key !== "Tab") return;
+    const items = $$(FOCUSABLE, container).filter((el) => el.offsetParent !== null || el === document.activeElement);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
   function toast(msg) {
     let t = $(".toast");
     if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
@@ -166,7 +177,8 @@
     return NAV.map((n) => {
       const active = n.key === CURRENT ? ' class="active"' : "";
       const sub = n.sub ? `<ul class="sub">${n.sub.map((s) => `<li><a href="${s.href}">${s.label}</a></li>`).join("")}</ul>` : "";
-      return `<li${n.sub ? ' class="has-sub"' : ""}><a href="${n.href}"${active}${n.sub && !mobile ? ' aria-haspopup="true"' : ""}>${n.label}${n.sub && !mobile ? " ▾" : ""}</a>${sub}</li>`;
+      const toggle = n.sub && !mobile ? `<button type="button" class="sub-toggle" aria-expanded="false" aria-haspopup="true" aria-label="Show ${n.label} menu">▾</button>` : "";
+      return `<li${n.sub ? ' class="has-sub"' : ""}><a href="${n.href}"${active}>${n.label}</a>${toggle}${sub}</li>`;
     }).join("");
   }
 
@@ -210,12 +222,26 @@
     const onScroll = () => { hdr.classList.toggle("scrolled", window.scrollY > 10); const tt = $("#to-top"); if (tt) tt.classList.toggle("show", window.scrollY > 500); };
     window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
-    const drawer = $("#drawer"), burger = $("#burger");
-    const open = (v) => { drawer.classList.toggle("open", v); drawer.setAttribute("aria-hidden", String(!v)); burger.setAttribute("aria-expanded", String(v)); document.body.style.overflow = v ? "hidden" : ""; };
+    const drawer = $("#drawer"), burger = $("#burger"), panel = $(".panel", drawer);
+    const open = (v) => {
+      const was = drawer.classList.contains("open"); if (was === v) return;
+      drawer.classList.toggle("open", v); drawer.setAttribute("aria-hidden", String(!v)); burger.setAttribute("aria-expanded", String(v)); document.body.style.overflow = v ? "hidden" : "";
+      if (v) setTimeout(() => $("#drawer-close").focus(), 60); else burger.focus();
+    };
     burger.addEventListener("click", () => open(true));
     $("#drawer-close").addEventListener("click", () => open(false));
     $(".backdrop", drawer).addEventListener("click", () => open(false));
-    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { open(false); closeModal(); } });
+    drawer.addEventListener("keydown", (e) => trapTab(e, panel));
+    matchMedia("(min-width: 1025px)").addEventListener("change", (m) => { if (m.matches) open(false); });
+
+    // Desktop sub-menu toggle (hover still works for mouse users; this covers touch and keyboard)
+    const closeSubs = () => $$(".nav .has-sub.open").forEach((li) => { li.classList.remove("open"); $(".sub-toggle", li).setAttribute("aria-expanded", "false"); });
+    $$(".nav .sub-toggle").forEach((b) => b.addEventListener("click", (e) => {
+      e.stopPropagation(); const li = b.closest(".has-sub"), willOpen = !li.classList.contains("open");
+      closeSubs(); li.classList.toggle("open", willOpen); b.setAttribute("aria-expanded", String(willOpen));
+    }));
+    document.addEventListener("click", (e) => { if (!e.target.closest(".nav .has-sub")) closeSubs(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { open(false); closeModal(); closeSubs(); } });
 
     $("#theme-toggle").addEventListener("click", (e) => {
       const btn = e.currentTarget;
@@ -359,7 +385,7 @@
     };
     const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } }), { threshold: .5 });
     els.forEach((e) => io.observe(e));
-    $$(".art-frame .bar i").forEach((b) => { const o = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { b.style.width = b.dataset.w || "72%"; o.disconnect(); } })); o.observe(b); });
+    $$(".card-float .bar i").forEach((b) => { const o = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { b.style.width = b.dataset.w || "72%"; o.disconnect(); } })); o.observe(b); });
   }
 
   /* ------------------------------------------------------------------
@@ -407,10 +433,16 @@
     modal.innerHTML = `<div class="backdrop"></div><div class="dialog"><div class="head"><button class="close" aria-label="Close">×</button><h2></h2><div class="sub" style="opacity:.9;font-size:.9rem"></div></div><div class="body"></div></div>`;
     modal.querySelector(".backdrop").addEventListener("click", closeModal);
     modal.querySelector(".close").addEventListener("click", closeModal);
+    modal.addEventListener("keydown", (e) => trapTab(e, modal.querySelector(".dialog")));
     document.body.appendChild(modal);
     return modal;
   }
-  function closeModal() { if (modal) { modal.classList.remove("open"); document.body.style.overflow = ""; } }
+  let modalLastFocus = null;
+  function closeModal() {
+    if (!modal || !modal.classList.contains("open")) return;
+    modal.classList.remove("open"); document.body.style.overflow = "";
+    if (modalLastFocus && modalLastFocus.focus) modalLastFocus.focus();
+  }
   function openCourse(id) {
     const c = COURSES.find((x) => x.id === id); if (!c) return;
     const m = ensureModal();
@@ -424,6 +456,7 @@
       <h3 style="font-size:1rem">What you'll achieve</h3>
       <ul class="outcomes">${c.outcomes.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
       <div class="actions"><a class="btn btn-accent" href="free-trial.html?course=${c.id}">Book a free trial</a><a class="btn btn-outline" href="fee-plans.html">See fee plans</a><a class="btn btn-whatsapp" target="_blank" rel="noopener" href="${waLink(`Assalamu alaikum, I'm interested in the ${c.title} course.`)}">${ICONS.whatsapp} Ask on WhatsApp</a></div>`;
+    modalLastFocus = document.activeElement;
     m.classList.add("open"); document.body.style.overflow = "hidden";
     m.querySelector(".close").focus();
   }
@@ -474,8 +507,10 @@
     const step = () => (track.firstElementChild ? track.firstElementChild.getBoundingClientRect().width + 24 : 300);
     prev && prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
     next && next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
-    let timer = setInterval(() => { if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 4) track.scrollTo({ left: 0, behavior: "smooth" }); else track.scrollBy({ left: step(), behavior: "smooth" }); }, 5000);
-    track.addEventListener("pointerenter", () => clearInterval(timer));
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const timer = setInterval(() => { if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 4) track.scrollTo({ left: 0, behavior: "smooth" }); else track.scrollBy({ left: step(), behavior: "smooth" }); }, 5000);
+    const stop = () => clearInterval(timer);
+    track.addEventListener("pointerenter", stop); track.addEventListener("pointerdown", stop, { passive: true }); track.addEventListener("focusin", stop);
   }
 
   /* ------------------------------------------------------------------
@@ -600,7 +635,7 @@
     const hide = () => { lb.classList.remove("open"); document.body.style.overflow = ""; if (lastFocus) lastFocus.focus(); };
     $(".prev", lb).addEventListener("click", () => step(-1)); $(".next", lb).addEventListener("click", () => step(1)); $(".close", lb).addEventListener("click", hide);
     lb.addEventListener("click", (e) => { if (e.target === lb) hide(); });
-    document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") hide(); if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+    document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") hide(); if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); trapTab(e, lb); });
     // Swipe on touch
     let sx = 0; lb.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; }, { passive: true });
     lb.addEventListener("touchend", (e) => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); });

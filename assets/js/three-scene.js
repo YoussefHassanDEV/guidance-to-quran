@@ -454,9 +454,14 @@
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     const stars = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTexture(), color: 0xdbe7ff, size: 0.32, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(stars);
     const moon = new THREE.Mesh(motifGeometries().crescent, new THREE.MeshStandardMaterial({ color: PALETTE.gold, emissive: PALETTE.gold, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.4 }));
-    moon.scale.setScalar(mobile ? 1.2 : 1.9); moon.rotation.z = 0.4; scene.add(moon);
-    // Keep the moon in an empty corner: top-left of the footer on desktop, top-right on phones.
-    const placeMoon = () => { const halfH = Math.tan(THREE.MathUtils.degToRad(30)) * 26, halfW = halfH * (host.clientWidth / Math.max(1, host.clientHeight)); moon.position.set(mobile ? halfW * 0.74 : -halfW * 0.94, mobile ? halfH * 0.9 : halfH * 0.66, -6); };
+    moon.rotation.z = 0.4; scene.add(moon);
+    // Keep the moon in an empty corner: top-left on wide screens where the centred container leaves a margin,
+    // otherwise small and tucked into the top-right corner so it never sits behind the footer text.
+    const placeMoon = () => {
+      const wide = host.clientWidth >= 1300, halfH = Math.tan(THREE.MathUtils.degToRad(30)) * 26, halfW = halfH * (host.clientWidth / Math.max(1, host.clientHeight));
+      moon.scale.setScalar(wide ? 1.9 : 1.2);
+      moon.position.set(wide ? -halfW * 0.94 : halfW * 0.9, wide ? halfH * 0.66 : halfH * 0.9, -6);
+    };
     scene.add(new THREE.AmbientLight(0xffffff, 0.6)); const l = new THREE.DirectionalLight(0xffffff, 0.8); l.position.set(-3, 5, 8); scene.add(l);
     const shooters = [];
     for (let i = 0; i < (mobile ? 2 : 4); i++) {
