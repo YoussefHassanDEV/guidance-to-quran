@@ -975,3 +975,14 @@ h2 { font-size: clamp(1.55rem, 5vw, 2.5rem); }
   .tabs button { flex-basis: 100%; }
   .hero-scene .chip { display: none; }
 }
+
+/* Icons inside buttons never grow */
+.btn svg, .btn img { width: 18px; height: 18px; flex: none; }
+.btn-sm svg { width: 16px; height: 16px; }
+.btn-lg svg { width: 20px; height: 20px; }
+.mobile-cta { align-items: stretch; }
+.mobile-cta .btn { font-size: .92rem; padding: .7rem .8rem; gap: .4rem; min-height: 46px; }
+.mobile-cta .btn svg { width: 18px; height: 18px; }
+.float-wa svg { width: 26px; height: 26px; }
+.drawer .panel .btn svg { width: 18px; height: 18px; }
+@media (max-width: 860px) { .hero-scene .chip.c1 { top: 0; bottom: auto; left: 2%; } }
