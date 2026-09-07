@@ -1,0 +1,462 @@
+/* Guidance to Quran — site script (no dependencies) */
+(function () {
+  "use strict";
+
+  /* ------------------------------------------------------------------
+     Config — edit these for your own academy
+  ------------------------------------------------------------------ */
+  const SITE = {
+    name: "Guidance to Quran",
+    tagline: "Online Quran Academy",
+    phoneDisplay: "+1 (202) 555-0148",
+    phoneIntl: "12025550148",           // digits only, used for WhatsApp / tel:
+    email: "hello@guidancetoquran.example",
+    // Optional: paste a Formspree / Getform endpoint to receive form submissions by email.
+    // Leave empty to fall back to WhatsApp + mailto (works on GitHub Pages with no backend).
+    formEndpoint: "",
+    socials: {
+      facebook: "#", instagram: "#", youtube: "#", linkedin: "#", x: "#", tiktok: "#"
+    }
+  };
+
+  const ICONS = {
+    phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>',
+    mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2.1-.2-.3 0-.5.1-.6l.4-.5.3-.5c.1-.2 0-.4 0-.5l-.9-2.2c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.2-.3-.3-.6-.4M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2m0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+    sun: '<svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></svg>',
+    moon: '<svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+    up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>',
+    users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>',
+    book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+    fb: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8h2.7l.4-3.2h-3.1V8.8c0-.9.3-1.6 1.6-1.6h1.7V4.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.1 1.5-4.1 4.2v2.4H7.4V14h2.8v8z"/></svg>',
+    ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>',
+    yt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12 31 31 0 0 0 1 16.8a3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1c.4-1.6.5-3.2.5-4.8s-.1-3.2-.5-4.8zM9.7 15.1V8.9l6.1 3.1z"/></svg>',
+    li: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.9 21H3.2V8.7h3.7zM5 7A2.1 2.1 0 1 1 5 2.8 2.1 2.1 0 0 1 5 7zm16 14h-3.7v-6c0-1.4 0-3.3-2-3.3s-2.3 1.6-2.3 3.2V21H9.4V8.7h3.5v1.7h.1a3.9 3.9 0 0 1 3.5-1.9c3.7 0 4.4 2.5 4.4 5.6z"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9.1L1 2h7l4.8 6.4zm-1.2 18h1.9L7.1 3.9H5.1z"/></svg>',
+    tt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.4 1.7 3.9 4 4.1v3.3c-1.5 0-2.9-.5-4-1.3v6.4a5.7 5.7 0 1 1-4.9-5.7v3.4a2.4 2.4 0 1 0 1.6 2.3V3z"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>'
+  };
+
+  const CURRENT = (document.body.dataset.page || "home").toLowerCase();
+
+  /* ------------------------------------------------------------------
+     Data
+  ------------------------------------------------------------------ */
+  const COURSES = [
+    { id: "qaida", title: "Noorani Qaida", cat: "quran", level: "Beginner", age: "4+", weeks: "3–6 months", theme: "t-blue", ar: "ق",
+      blurb: "The foundation of Quran reading. Learn the Arabic alphabet, harakat, sukoon, tanween and joining letters with correct pronunciation.",
+      outcomes: ["Recognise and pronounce every Arabic letter from its correct makhraj", "Read joined words and short ayahs fluently", "Build the base for Tajweed and Nazra"], from: 25 },
+    { id: "nazra", title: "Quran Reading (Nazra)", cat: "quran", level: "Beginner–Intermediate", age: "5+", weeks: "6–12 months", theme: "t-teal", ar: "ن",
+      blurb: "Move from Qaida to reading the full Mushaf accurately, at a comfortable pace, with a dedicated one-to-one teacher.",
+      outcomes: ["Read any page of the Quran without assistance", "Apply basic Tajweed rules while reading", "Complete a full khatm with your teacher"], from: 25 },
+    { id: "tajweed", title: "Quran Reading with Tajweed", cat: "quran", level: "Intermediate", age: "7+", weeks: "6–12 months", theme: "t-orange", ar: "ت",
+      blurb: "Perfect your recitation. Study the rules of noon sakinah, meem sakinah, madd, qalqalah and the articulation points in depth.",
+      outcomes: ["Recite with the precision of a trained Qari", "Understand and name every Tajweed rule you apply", "Ijazah preparation track available"], from: 25 },
+    { id: "hifz", title: "Quran Memorization (Hifz)", cat: "quran", level: "All levels", age: "6+", weeks: "2–4 years", theme: "t-navy", ar: "ح",
+      blurb: "A structured memorisation programme with daily sabaq, sabqi and manzil revision, progress tracking and parent reports.",
+      outcomes: ["Memorise selected surahs or the complete Quran", "Retain what you memorise with a proven revision cycle", "Monthly written progress reports"], from: 35 },
+    { id: "tafseer", title: "Tafseer ul Quran", cat: "islamic", level: "Intermediate–Advanced", age: "12+", weeks: "12+ months", theme: "t-purple", ar: "ف",
+      blurb: "Understand the meaning, context and lessons of the Quran surah by surah, drawing on classical tafseer works.",
+      outcomes: ["Grasp the themes and message of each surah", "Learn the reasons of revelation and key rulings", "Reflect and apply the Quran in daily life"], from: 30 },
+    { id: "translation", title: "Quran Translation", cat: "islamic", level: "All levels", age: "10+", weeks: "12 months", theme: "t-green", ar: "ر",
+      blurb: "Word-by-word translation of the Quran so you understand what you recite in salah and daily tilawah.",
+      outcomes: ["Understand the vocabulary of the Quran", "Follow the meaning during recitation", "Strengthen your connection in salah"], from: 30 },
+    { id: "scholar", title: "Islamic Scholar Course", cat: "islamic", level: "Advanced", age: "15+", weeks: "3 years", theme: "t-amber", ar: "ع",
+      blurb: "A multi-year 'Alim/'Alimah track covering Aqeedah, Fiqh, Hadith, Seerah, Arabic grammar and Usool, taught by qualified Muftis.",
+      outcomes: ["Solid grounding in the core Islamic sciences", "Ability to read classical Arabic texts", "Certificate on completion"], from: 40 },
+    { id: "seerah", title: "Seerat un Nabi ﷺ", cat: "islamic", level: "All levels", age: "8+", weeks: "6 months", theme: "t-rose", ar: "س",
+      blurb: "Walk through the life of the Prophet Muhammad ﷺ from birth to the Farewell Pilgrimage, with lessons for today.",
+      outcomes: ["Know the key events and people of the Seerah", "Learn the Prophet's character and manners", "Family-friendly, story-based lessons"], from: 25 },
+    { id: "arabic", title: "Arabic Language", cat: "language", level: "Beginner–Advanced", age: "8+", weeks: "6–18 months", theme: "t-blue", ar: "ع",
+      blurb: "Modern Standard and Quranic Arabic: reading, writing, grammar (nahw & sarf) and conversation with native-speaking teachers.",
+      outcomes: ["Hold everyday conversations in Arabic", "Read and understand Quranic Arabic", "Master essential grammar"], from: 30 },
+    { id: "urdu", title: "Urdu Language", cat: "language", level: "Beginner–Intermediate", age: "6+", weeks: "6–12 months", theme: "t-teal", ar: "ا",
+      blurb: "Learn to read, write and speak Urdu with a friendly tutor. Perfect for diaspora families who want children to keep their language.",
+      outcomes: ["Read and write the Urdu script", "Converse confidently with family", "Read simple Urdu books and poetry"], from: 25 },
+    { id: "english", title: "English Language", cat: "language", level: "Beginner–Intermediate", age: "6+", weeks: "6–12 months", theme: "t-purple", ar: "E",
+      blurb: "Spoken English, grammar and writing for students and professionals, with structured lessons and practice sessions.",
+      outcomes: ["Speak clearly and confidently", "Write correct, natural English", "Prepare for school or work"], from: 25 },
+    { id: "duas", title: "Daily Duas & Salah", cat: "short", level: "Beginner", age: "4+", weeks: "6–8 weeks", theme: "t-orange", ar: "د",
+      blurb: "A short course for children and reverts: learn wudu, salah step by step, and the essential daily supplications with meaning.",
+      outcomes: ["Pray salah correctly and confidently", "Memorise 40 essential duas", "Understand the meaning of what you say"], from: 20 },
+    { id: "tutoring", title: "School Subjects Tutoring", cat: "short", level: "Grades 1–12", age: "6+", weeks: "Flexible", theme: "t-green", ar: "+",
+      blurb: "Maths, Science and English tutoring aligned with your school curriculum, delivered by experienced subject teachers.",
+      outcomes: ["Improve grades with personalised support", "Homework and exam preparation help", "Progress feedback to parents"], from: 30 },
+    { id: "ramadan", title: "Ramadan Intensive", cat: "short", level: "All levels", age: "8+", weeks: "4 weeks", theme: "t-navy", ar: "ر",
+      blurb: "A seasonal programme to complete or revise a portion of the Quran, learn the fiqh of fasting and prepare for Laylatul Qadr.",
+      outcomes: ["Daily tilawah with a teacher", "Fiqh of fasting, zakah and Eid", "Special dua and dhikr sessions"], from: 20 }
+  ];
+
+  const PLAN_CATS = [
+    { id: "qaida", label: "Qaida & Quran Reading with Tajweed", base: 1 },
+    { id: "hifz", label: "Quran Memorization", base: 1.4 },
+    { id: "tafseer", label: "Tafseer & Translation", base: 1.2 },
+    { id: "short", label: "Short Courses", base: 0.8 },
+    { id: "tutoring", label: "School Subjects Tutoring", base: 1.2 },
+    { id: "language", label: "Arabic / English / Urdu", base: 1.2 },
+    { id: "scholar", label: "Islamic Scholar Course", base: 1.6 }
+  ];
+  const PLANS = [
+    { id: "a", name: "Plan A", days: 2, usd: 25, gbp: 20, classes: 8 },
+    { id: "b", name: "Plan B", days: 3, usd: 35, gbp: 28, classes: 12, featured: true },
+    { id: "c", name: "Plan C", days: 4, usd: 40, gbp: 32, classes: 16 },
+    { id: "d", name: "Plan D", days: 5, usd: 50, gbp: 40, classes: 20 },
+    { id: "w", name: "Weekend", days: "Sat & Sun", usd: 40, gbp: 32, classes: 8 }
+  ];
+
+  /* ------------------------------------------------------------------
+     Helpers
+  ------------------------------------------------------------------ */
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+  const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+  const waLink = (msg) => `https://wa.me/${SITE.phoneIntl}?text=${encodeURIComponent(msg)}`;
+
+  function toast(msg) {
+    let t = $(".toast");
+    if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 3200);
+  }
+
+  /* ------------------------------------------------------------------
+     Layout: header / footer / floating
+  ------------------------------------------------------------------ */
+  const NAV = [
+    { href: "index.html", label: "Home", key: "home" },
+    { href: "courses.html", label: "Courses", key: "courses", sub: [
+      { href: "courses.html#quran", label: "Quran Courses" },
+      { href: "courses.html#islamic", label: "Islamic Studies" },
+      { href: "courses.html#language", label: "Language Courses" },
+      { href: "courses.html#short", label: "Short Courses" }
+    ] },
+    { href: "fee-plans.html", label: "Fee Plans", key: "fees" },
+    { href: "about.html", label: "About Us", key: "about" },
+    { href: "blog.html", label: "Blog", key: "blog" },
+    { href: "free-trial.html", label: "Contact", key: "trial" }
+  ];
+
+  function navList(mobile) {
+    return NAV.map((n) => {
+      const active = n.key === CURRENT ? ' class="active"' : "";
+      const sub = n.sub ? `<ul class="sub">${n.sub.map((s) => `<li><a href="${s.href}">${s.label}</a></li>`).join("")}</ul>` : "";
+      return `<li${n.sub ? ' class="has-sub"' : ""}><a href="${n.href}"${active}${n.sub && !mobile ? ' aria-haspopup="true"' : ""}>${n.label}${n.sub && !mobile ? " ▾" : ""}</a>${sub}</li>`;
+    }).join("");
+  }
+
+  function socials() {
+    const s = SITE.socials;
+    return `<a href="${s.facebook}" aria-label="Facebook">${ICONS.fb}</a><a href="${s.instagram}" aria-label="Instagram">${ICONS.ig}</a><a href="${s.youtube}" aria-label="YouTube">${ICONS.yt}</a><a href="${s.linkedin}" aria-label="LinkedIn">${ICONS.li}</a><a href="${s.x}" aria-label="X">${ICONS.x}</a><a href="${s.tiktok}" aria-label="TikTok">${ICONS.tt}</a>`;
+  }
+
+  function renderHeader() {
+    const el = $("#site-header"); if (!el) return;
+    el.innerHTML = `
+      <a class="skip-link" href="#main">Skip to content</a>
+      <div class="topbar"><div class="container">
+        <ul>
+          <li><a href="tel:+${SITE.phoneIntl}">${ICONS.phone} ${SITE.phoneDisplay}</a></li>
+          <li><a href="mailto:${SITE.email}">${ICONS.mail} ${SITE.email}</a></li>
+          <li><span style="opacity:.85">${ICONS.clock} Classes 24/7 · all time zones</span></li>
+        </ul>
+        <div class="socials">${socials()}</div>
+      </div></div>
+      <div class="header" id="hdr"><div class="container">
+        <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="44" height="44"><span>${SITE.name}<small>${SITE.tagline}</small></span></a>
+        <nav class="nav" aria-label="Primary"><ul>${navList(false)}</ul></nav>
+        <div class="header-actions">
+          <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">${ICONS.sun}${ICONS.moon}</button>
+          <a class="btn btn-accent btn-sm" href="free-trial.html">Book Free Trial</a>
+          <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">${ICONS.menu}</button>
+        </div>
+      </div></div>
+      <div class="drawer" id="drawer" aria-hidden="true">
+        <div class="backdrop"></div>
+        <div class="panel" role="dialog" aria-label="Menu">
+          <div class="panel-head"><a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="40" height="40"><span>${SITE.name}</span></a><button class="icon-btn" id="drawer-close" aria-label="Close menu">${ICONS.close}</button></div>
+          <nav aria-label="Mobile"><ul>${navList(true)}</ul></nav>
+          <a class="btn btn-accent btn-block" href="free-trial.html">Book Free Trial Class</a>
+          <a class="btn btn-whatsapp btn-block" style="margin-top:.6rem" href="${waLink("Assalamu alaikum, I would like to know more about your courses.")}" target="_blank" rel="noopener">${ICONS.whatsapp} WhatsApp us</a>
+        </div>
+      </div>`;
+
+    const hdr = $("#hdr");
+    const onScroll = () => { hdr.classList.toggle("scrolled", window.scrollY > 10); const tt = $("#to-top"); if (tt) tt.classList.toggle("show", window.scrollY > 500); };
+    window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+    const drawer = $("#drawer"), burger = $("#burger");
+    const open = (v) => { drawer.classList.toggle("open", v); drawer.setAttribute("aria-hidden", String(!v)); burger.setAttribute("aria-expanded", String(v)); document.body.style.overflow = v ? "hidden" : ""; };
+    burger.addEventListener("click", () => open(true));
+    $("#drawer-close").addEventListener("click", () => open(false));
+    $(".backdrop", drawer).addEventListener("click", () => open(false));
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { open(false); closeModal(); } });
+
+    $("#theme-toggle").addEventListener("click", () => {
+      const dark = document.documentElement.getAttribute("data-theme") === "dark";
+      document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+      try { localStorage.setItem("gtq-theme", dark ? "light" : "dark"); } catch (e) {}
+    });
+  }
+
+  function renderFooter() {
+    const el = $("#site-footer"); if (!el) return;
+    const y = new Date().getFullYear();
+    el.innerHTML = `
+      <div class="container">
+        <div class="top">
+          <div>
+            <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="44" height="44"><span>${SITE.name}<small>${SITE.tagline}</small></span></a>
+            <p style="font-size:.93rem">We help children and adults across the world learn to read, understand and love the Quran through live one-to-one classes with qualified, caring teachers.</p>
+            <div class="badges"><span>${ICONS.shield} SSL secured</span><span>${ICONS.shield} Kid-safe classes</span><span>${ICONS.shield} Money-back trial</span></div>
+            <div class="socials">${socials()}</div>
+          </div>
+          <div>
+            <h4>Quick links</h4>
+            <ul>
+              <li><a href="about.html">About us</a></li>
+              <li><a href="courses.html">All courses</a></li>
+              <li><a href="fee-plans.html">Fee plans</a></li>
+              <li><a href="free-trial.html">Free trial</a></li>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="about.html#faq">FAQs</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Popular courses</h4>
+            <ul>
+              <li><a href="courses.html#qaida">Noorani Qaida</a></li>
+              <li><a href="courses.html#tajweed">Quran with Tajweed</a></li>
+              <li><a href="courses.html#hifz">Quran Memorization</a></li>
+              <li><a href="courses.html#tafseer">Tafseer ul Quran</a></li>
+              <li><a href="courses.html#arabic">Arabic Language</a></li>
+              <li><a href="courses.html#scholar">Islamic Scholar Course</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Contact us</h4>
+            <ul class="contact">
+              <li>${ICONS.phone}<span>Call / WhatsApp<br><a href="tel:+${SITE.phoneIntl}">${SITE.phoneDisplay}</a></span></li>
+              <li>${ICONS.mail}<span>Email<br><a href="mailto:${SITE.email}">${SITE.email}</a></span></li>
+              <li>${ICONS.clock}<span>Support hours<br>24 hours · 7 days a week</span></li>
+            </ul>
+            <h4 style="margin-top:1.4rem">Newsletter</h4>
+            <form class="newsletter" id="newsletter"><input type="email" placeholder="Your email" aria-label="Email" required><button class="btn btn-accent btn-sm" type="submit">Join</button></form>
+          </div>
+        </div>
+        <div class="bottom">
+          <div>© ${y} ${SITE.name}. All rights reserved.</div>
+          <ul><li><a href="about.html#faq">Privacy</a></li><li><a href="about.html#faq">Refund policy</a></li><li><a href="about.html#faq">Disclaimer</a></li></ul>
+        </div>
+      </div>`;
+    $("#newsletter").addEventListener("submit", (e) => { e.preventDefault(); e.target.reset(); toast("JazakAllah khair! You're subscribed."); });
+
+    // Floating buttons
+    const wa = document.createElement("a");
+    wa.className = "float-wa"; wa.href = waLink("Assalamu alaikum! I'd like to book a free trial class."); wa.target = "_blank"; wa.rel = "noopener"; wa.setAttribute("aria-label", "Chat on WhatsApp"); wa.innerHTML = ICONS.whatsapp;
+    document.body.appendChild(wa);
+    const tt = document.createElement("button");
+    tt.className = "to-top"; tt.id = "to-top"; tt.setAttribute("aria-label", "Back to top"); tt.innerHTML = ICONS.up;
+    tt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    document.body.appendChild(tt);
+  }
+
+  /* ------------------------------------------------------------------
+     Reveal on scroll & counters
+  ------------------------------------------------------------------ */
+  function initReveal() {
+    const els = $$(".reveal"); if (!els.length) return;
+    if (!("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
+    const io = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: .12 });
+    els.forEach((e, i) => { e.style.transitionDelay = `${(i % 4) * 80}ms`; io.observe(e); });
+  }
+  function initCounters() {
+    const els = $$("[data-count]"); if (!els.length) return;
+    const run = (el) => {
+      const target = +el.dataset.count, suffix = el.dataset.suffix || "", dur = 1600, t0 = performance.now();
+      const step = (t) => { const p = Math.min(1, (t - t0) / dur), v = Math.floor(target * (1 - Math.pow(1 - p, 3))); el.textContent = v.toLocaleString() + suffix; if (p < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } }), { threshold: .5 });
+    els.forEach((e) => io.observe(e));
+    $$(".art-frame .bar i").forEach((b) => { const o = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { b.style.width = b.dataset.w || "72%"; o.disconnect(); } })); o.observe(b); });
+  }
+
+  /* ------------------------------------------------------------------
+     Courses
+  ------------------------------------------------------------------ */
+  function courseCard(c) {
+    return `<article class="card course-card reveal" id="${c.id}" data-cat="${c.cat}" data-title="${esc(c.title.toLowerCase())}">
+      <div class="thumb ${c.theme}"><span class="arabic-bg">${c.ar}</span><span class="tag">${c.level}</span><span>${esc(c.title)}</span></div>
+      <div class="body">
+        <div class="meta"><span>${ICONS.users} Ages ${c.age}</span><span>${ICONS.clock} ${c.weeks}</span><span>${ICONS.book} 1-to-1 live</span></div>
+        <p class="muted" style="font-size:.93rem">${esc(c.blurb)}</p>
+        <div class="foot"><span class="price">from $${c.from}<small>/mo</small></span><button class="btn btn-primary btn-sm" data-course="${c.id}">Details</button></div>
+      </div>
+    </article>`;
+  }
+
+  function initCourses() {
+    const grid = $("#course-grid"); if (!grid) return;
+    const limit = +grid.dataset.limit || COURSES.length;
+    const list = COURSES.slice(0, limit);
+    grid.innerHTML = list.map(courseCard).join("");
+
+    const search = $("#course-search"), chips = $$("[data-filter]");
+    let cat = "all", q = "";
+    const apply = () => {
+      let n = 0;
+      $$(".course-card", grid).forEach((el) => { const ok = (cat === "all" || el.dataset.cat === cat) && (!q || el.dataset.title.includes(q)); el.style.display = ok ? "" : "none"; if (ok) n++; el.classList.add("in"); });
+      let empty = $(".empty", grid);
+      if (!n) { if (!empty) { empty = document.createElement("div"); empty.className = "empty"; empty.textContent = "No courses match your search. Try another keyword or contact us — we can build a custom plan."; grid.appendChild(empty); } }
+      else if (empty) empty.remove();
+    };
+    chips.forEach((b) => b.addEventListener("click", () => { chips.forEach((x) => x.classList.remove("active")); b.classList.add("active"); cat = b.dataset.filter; apply(); }));
+    if (search) search.addEventListener("input", () => { q = search.value.trim().toLowerCase(); apply(); });
+    // Deep link: courses.html#quran selects a category, courses.html#hifz scrolls to a course
+    const h = location.hash.replace("#", "");
+    if (h) { const chip = chips.find((c) => c.dataset.filter === h); if (chip) chip.click(); else { const el = document.getElementById(h); if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200); } }
+
+    document.addEventListener("click", (e) => { const b = e.target.closest("[data-course]"); if (b) openCourse(b.dataset.course); });
+  }
+
+  let modal;
+  function ensureModal() {
+    if (modal) return modal;
+    modal = document.createElement("div"); modal.className = "modal"; modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true");
+    modal.innerHTML = `<div class="backdrop"></div><div class="dialog"><div class="head"><button class="close" aria-label="Close">×</button><h2></h2><div class="sub" style="opacity:.9;font-size:.9rem"></div></div><div class="body"></div></div>`;
+    modal.querySelector(".backdrop").addEventListener("click", closeModal);
+    modal.querySelector(".close").addEventListener("click", closeModal);
+    document.body.appendChild(modal);
+    return modal;
+  }
+  function closeModal() { if (modal) { modal.classList.remove("open"); document.body.style.overflow = ""; } }
+  function openCourse(id) {
+    const c = COURSES.find((x) => x.id === id); if (!c) return;
+    const m = ensureModal();
+    const head = m.querySelector(".head"); head.className = "head " + c.theme;
+    m.querySelector("h2").textContent = c.title;
+    m.querySelector(".sub").textContent = `${c.level} · Ages ${c.age} · ${c.weeks}`;
+    m.querySelector(".body").innerHTML = `
+      <p class="muted">${esc(c.blurb)}</p>
+      <div class="kv"><div><strong>Format</strong>Live 1-to-1 via Zoom / Skype</div><div><strong>Class length</strong>30, 45 or 60 minutes</div><div><strong>Starts from</strong>$${c.from} / month</div></div>
+      <h3 style="font-size:1rem">What you'll achieve</h3>
+      <ul class="outcomes">${c.outcomes.map((o) => `<li>${esc(o)}</li>`).join("")}</ul>
+      <div class="actions"><a class="btn btn-accent" href="free-trial.html?course=${c.id}">Book a free trial</a><a class="btn btn-outline" href="fee-plans.html">See fee plans</a><a class="btn btn-whatsapp" target="_blank" rel="noopener" href="${waLink(`Assalamu alaikum, I'm interested in the ${c.title} course.`)}">${ICONS.whatsapp} Ask on WhatsApp</a></div>`;
+    m.classList.add("open"); document.body.style.overflow = "hidden";
+    m.querySelector(".close").focus();
+  }
+
+  /* ------------------------------------------------------------------
+     Pricing
+  ------------------------------------------------------------------ */
+  function initPricing() {
+    const wrap = $("#plans"); if (!wrap) return;
+    const tabs = $("#plan-tabs"), cur = $("#currency");
+    let cat = PLAN_CATS[0], currency = "usd";
+    if (tabs) tabs.innerHTML = PLAN_CATS.map((c, i) => `<button type="button" class="${i ? "" : "active"}" data-cat="${c.id}">${c.label}</button>`).join("");
+    const sym = { usd: "$", gbp: "£" };
+    const render = () => {
+      wrap.innerHTML = PLANS.map((p) => {
+        const price = Math.round(p[currency] * cat.base);
+        const dayTxt = typeof p.days === "number" ? `${p.days} days a week` : `${p.days} (weekend only)`;
+        return `<div class="card plan ${p.featured ? "featured" : ""}">
+          ${p.featured ? '<span class="ribbon">Most popular</span>' : ""}
+          <h3>${p.name}</h3>
+          <div class="amount"><sup>${sym[currency]}</sup>${price}</div>
+          <div class="per">per month · ${cat.label}</div>
+          <ul>
+            <li>${ICONS.check}<span>${dayTxt}</span></li>
+            <li>${ICONS.check}<span>30-minute live class</span></li>
+            <li>${ICONS.check}<span>${p.classes} classes per month</span></li>
+            <li>${ICONS.check}<span>Monthly progress report</span></li>
+            <li>${ICONS.check}<span>Male or female teacher</span></li>
+            ${p.featured ? `<li>${ICONS.check}<span>Free make-up classes</span></li>` : ""}
+          </ul>
+          <a class="btn ${p.featured ? "btn-light" : "btn-primary"}" href="free-trial.html?plan=${p.id}">Start free trial</a>
+          <div class="note">Cancel anytime · first month ${sym[currency]}${currency === "usd" ? 20 : 16} for new students</div>
+        </div>`;
+      }).join("");
+      const perClass = $("#per-class"); if (perClass) perClass.textContent = `${sym[currency]}${(Math.round(PLANS[1][currency] * cat.base) / PLANS[1].classes).toFixed(2)}`;
+    };
+    if (tabs) tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; $$("button", tabs).forEach((x) => x.classList.remove("active")); b.classList.add("active"); cat = PLAN_CATS.find((c) => c.id === b.dataset.cat); render(); });
+    if (cur) cur.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; $$("button", cur).forEach((x) => x.classList.remove("active")); b.classList.add("active"); currency = b.dataset.cur; render(); });
+    render();
+  }
+
+  /* ------------------------------------------------------------------
+     Testimonials scroller
+  ------------------------------------------------------------------ */
+  function initTestimonials() {
+    const track = $(".testi-track"); if (!track) return;
+    const prev = $("#testi-prev"), next = $("#testi-next");
+    const step = () => (track.firstElementChild ? track.firstElementChild.getBoundingClientRect().width + 24 : 300);
+    prev && prev.addEventListener("click", () => track.scrollBy({ left: -step(), behavior: "smooth" }));
+    next && next.addEventListener("click", () => track.scrollBy({ left: step(), behavior: "smooth" }));
+    let timer = setInterval(() => { if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 4) track.scrollTo({ left: 0, behavior: "smooth" }); else track.scrollBy({ left: step(), behavior: "smooth" }); }, 5000);
+    track.addEventListener("pointerenter", () => clearInterval(timer));
+  }
+
+  /* ------------------------------------------------------------------
+     Free-trial / contact form
+  ------------------------------------------------------------------ */
+  function initForm() {
+    const form = $("#trial-form"); if (!form) return;
+    const courseSel = $("#f-course");
+    if (courseSel) { courseSel.innerHTML = '<option value="">Select a course</option>' + COURSES.map((c) => `<option value="${c.id}">${esc(c.title)}</option>`).join(""); }
+    // Prefill from query string
+    const qs = new URLSearchParams(location.search);
+    if (qs.get("course") && courseSel) courseSel.value = qs.get("course");
+    const planSel = $("#f-plan"); if (qs.get("plan") && planSel) planSel.value = qs.get("plan");
+    // Timezone helper
+    const tz = $("#tz"); if (tz) { try { tz.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone.replace("_", " "); } catch (e) { tz.textContent = "your local time"; } }
+
+    const validate = () => {
+      let ok = true;
+      $$(".field[data-req]", form).forEach((f) => {
+        const input = $("input, select, textarea", f); let good = !!input.value.trim();
+        if (good && input.type === "email") good = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+        if (good && input.type === "tel") good = input.value.replace(/\D/g, "").length >= 7;
+        f.classList.toggle("invalid", !good); if (!good) ok = false;
+      });
+      return ok;
+    };
+    form.addEventListener("input", (e) => { const f = e.target.closest(".field"); if (f) f.classList.remove("invalid"); });
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!validate()) { toast("Please fill in the highlighted fields."); return; }
+      const d = Object.fromEntries(new FormData(form).entries());
+      const courseName = (COURSES.find((c) => c.id === d.course) || {}).title || "Not sure yet";
+      const msg = `Assalamu alaikum! I'd like to book a free trial class.\n\nName: ${d.name}\nEmail: ${d.email}\nPhone/WhatsApp: ${d.phone}\nCountry: ${d.country}\nStudent age: ${d.age || "-"}\nCourse: ${courseName}\nPreferred time: ${d.time || "-"} (${d.tz || ""})\nTeacher preference: ${d.teacher || "No preference"}\nMessage: ${d.message || "-"}`;
+      const btn = $("button[type=submit]", form); btn.disabled = true; btn.textContent = "Sending…";
+      let sent = false;
+      if (SITE.formEndpoint) {
+        try { const r = await fetch(SITE.formEndpoint, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(d) }); sent = r.ok; } catch (err) { sent = false; }
+      }
+      form.style.display = "none";
+      const s = $("#form-success"); s.style.display = "block";
+      $("#s-wa", s).href = waLink(msg);
+      $("#s-mail", s).href = `mailto:${SITE.email}?subject=${encodeURIComponent("Free trial request — " + d.name)}&body=${encodeURIComponent(msg)}`;
+      $("#s-title", s).textContent = sent ? "Request received!" : "One last step";
+      $("#s-text", s).textContent = sent ? "JazakAllah khair. Our admissions team will contact you within 24 hours to schedule your free class." : "Send your request to our admissions team via WhatsApp or email — it's pre-filled, just press send. We'll reply within 24 hours to schedule your free class.";
+      if (!sent) { try { window.open(waLink(msg), "_blank", "noopener"); } catch (err) {} }
+      s.scrollIntoView({ behavior: "smooth", block: "center" });
+      try { localStorage.setItem("gtq-lead", JSON.stringify({ name: d.name, at: Date.now() })); } catch (err) {}
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Init
+  ------------------------------------------------------------------ */
+  document.addEventListener("DOMContentLoaded", () => {
+    renderHeader(); renderFooter();
+    initCourses(); initPricing(); initTestimonials(); initForm();
+    initReveal(); initCounters();
+    // Smooth-scroll for in-page anchors with sticky offset
+    document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const y = t.getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: y, behavior: "smooth" }); } });
+  });
+})();

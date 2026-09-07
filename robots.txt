@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://youssefhassandev.github.io/guidance-to-quran/sitemap.xml
