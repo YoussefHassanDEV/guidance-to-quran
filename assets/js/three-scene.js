@@ -45,10 +45,10 @@
     const N = innerWidth < 700 ? 18 : 34;
     for (let i = 0; i < N; i++) {
       const g = geos[i % geos.length];
-      const m = new THREE.MeshStandardMaterial({ color: palette[i % palette.length], roughness: 0.35, metalness: 0.15, transparent: true, opacity: 0.85, flatShading: true });
+      const m = new THREE.MeshStandardMaterial({ color: palette[i % palette.length], roughness: 0.35, metalness: 0.15, transparent: true, opacity: 0.6, flatShading: true });
       const mesh = new THREE.Mesh(g, m);
       const s = rand(0.35, 1.1); mesh.scale.setScalar(s);
-      mesh.position.set(rand(-16, 16), rand(-8, 8), rand(-10, 4));
+      mesh.position.set(rand(-18, 18), rand(-9, 9), rand(-14, -2));
       mesh.rotation.set(rand(0, 6), rand(0, 6), 0);
       mesh.userData = { spin: new THREE.Vector3(rand(-0.4, 0.4), rand(-0.4, 0.4), rand(-0.2, 0.2)), bob: rand(0.2, 0.7), phase: rand(0, 6.28), y: mesh.position.y };
       shapes.add(mesh);
@@ -83,7 +83,7 @@
         stars.rotation.z = t * 0.01;
       }
       const dark = isDark();
-      shapes.children.forEach((m) => { m.material.opacity = dark ? 0.75 : 0.85; });
+      shapes.children.forEach((m) => { m.material.opacity = dark ? 0.5 : 0.6; });
       renderer.render(scene, camera);
     };
     tick();
