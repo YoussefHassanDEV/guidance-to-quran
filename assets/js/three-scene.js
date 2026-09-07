@@ -108,7 +108,7 @@
     const label = host.querySelector(".globe-label");
     const renderer = makeRenderer(canvas); if (!renderer) { canvas.remove(); return; }
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100); camera.position.set(0, 0, 7.2);
+    const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100); camera.position.set(0, 0, 6.9);
     scene.add(new THREE.AmbientLight(0xffffff, 0.9));
     const sun = new THREE.DirectionalLight(0xffffff, 0.8); sun.position.set(5, 3, 5); scene.add(sun);
 

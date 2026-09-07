@@ -210,10 +210,33 @@
     $(".backdrop", drawer).addEventListener("click", () => open(false));
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") { open(false); closeModal(); } });
 
-    $("#theme-toggle").addEventListener("click", () => {
+    $("#theme-toggle").addEventListener("click", (e) => {
+      const btn = e.currentTarget;
       const dark = document.documentElement.getAttribute("data-theme") === "dark";
-      document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
-      try { localStorage.setItem("gtq-theme", dark ? "light" : "dark"); } catch (e) {}
+      const next = dark ? "light" : "dark";
+      const apply = () => { document.documentElement.setAttribute("data-theme", next); try { localStorage.setItem("gtq-theme", next); } catch (err) {} };
+      btn.classList.remove("spin"); void btn.offsetWidth; btn.classList.add("spin");
+      const r = btn.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (document.startViewTransition && !reduce) {
+        // Circular reveal from the toggle button (View Transitions API)
+        const vt = document.startViewTransition(apply);
+        vt.ready.then(() => {
+          document.documentElement.animate(
+            { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+            { duration: 650, easing: "cubic-bezier(.2,.7,.2,1)", pseudoElement: "::view-transition-new(root)" }
+          );
+        }).catch(() => {});
+      } else if (!reduce) {
+        // Fallback: expanding coloured circle overlay, then swap theme
+        const ov = document.createElement("div"); ov.className = "theme-ripple";
+        ov.style.cssText = `left:${x}px;top:${y}px;background:${next === "dark" ? "#0d1420" : "#ffffff"}`;
+        document.body.appendChild(ov);
+        requestAnimationFrame(() => { ov.style.transform = `translate(-50%,-50%) scale(${radius / 10})`; });
+        setTimeout(apply, 380);
+        setTimeout(() => { ov.style.opacity = "0"; setTimeout(() => ov.remove(), 350); }, 620);
+      } else apply();
     });
   }
 

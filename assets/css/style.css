@@ -772,3 +772,19 @@ body { overflow-x: hidden; }
   .faq-side { text-align: center; }
   .faq-side img { margin-inline: auto; }
 }
+
+/* Theme toggle animation */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; } ::view-transition-new(root) { z-index: 2; }
+.theme-toggle { overflow: hidden; }
+.theme-toggle svg { transition: transform .5s var(--ease); }
+.theme-toggle:hover svg { transform: rotate(25deg) scale(1.1); }
+.theme-toggle.spin svg { animation: spinIcon .6s var(--ease); }
+@keyframes spinIcon { 0% { transform: rotate(0) scale(1); } 50% { transform: rotate(180deg) scale(.4); opacity: .3; } 100% { transform: rotate(360deg) scale(1); opacity: 1; } }
+.theme-ripple { position: fixed; width: 20px; height: 20px; border-radius: 50%; z-index: 450; pointer-events: none; transform: translate(-50%,-50%) scale(0); transition: transform .6s cubic-bezier(.2,.7,.2,1), opacity .3s; }
+
+/* Bigger globe */
+.globe-wrap { grid-template-columns: 1.3fr 1fr; gap: 3rem; }
+#globe { max-width: 720px; }
+#globe .globe-label { font-size: 1rem; padding: .6rem 1.2rem; }
+@media (max-width: 1024px) { #globe { max-width: 100%; } }
