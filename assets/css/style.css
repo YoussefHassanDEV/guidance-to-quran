@@ -819,3 +819,14 @@ body { overflow-x: hidden; }
 .testi .who .av { position: relative; }
 .testi .who .av:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
 .testi:hover .who .av { transform: scale(1.08); transition: transform .25s var(--ease); }
+
+/* Hero photo lightbox */
+.hero-scene .photo { cursor: zoom-in; pointer-events: auto; }
+.hero-scene .photo::after { content: "🔍"; position: absolute; left: .7rem; bottom: .7rem; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.92); display: grid; place-items: center; font-size: .85rem; opacity: 0; transform: scale(.6); transition: .25s; z-index: 2; }
+.hero-scene .photo:hover::after, .hero-scene .photo:focus-visible::after { opacity: 1; transform: none; }
+.hero-scene .photo:hover { z-index: 6; }
+.hero-scene .photo:hover img { transform: scale(1.04); transition: transform .5s var(--ease); }
+.hero-scene .photo:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.hero-scene .mascot, .hero-scene .sparkle, .hero-scene .book3d-wrap { pointer-events: none; }
+.lightbox { pointer-events: none; }
+.lightbox.open { pointer-events: auto; }

@@ -642,6 +642,17 @@
         av.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(testiItems, i); } });
       });
     }
+    // Hero collage photos
+    const heroPhotos = $$(".hero-scene .photo");
+    if (heroPhotos.length) {
+      const heroItems = heroPhotos.map((p) => { const img = $("img", p); return { src: img.src.replace(/w=\d+/, "w=1400"), alt: img.alt, cap: `📸 ${p.dataset.cap || img.alt}`,
+        actions: `<a class="btn btn-accent btn-sm" href="free-trial.html" data-lb-link>Book a free trial</a>` }; });
+      heroPhotos.forEach((p, i) => {
+        p.tabIndex = 0; p.setAttribute("role", "button"); p.setAttribute("aria-label", `View photo: ${p.dataset.cap || ""}`);
+        p.addEventListener("click", () => openLb(heroItems, i));
+        p.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(heroItems, i); } });
+      });
+    }
     if (!posts.length) lb.addEventListener("click", (e) => { if (e.target.closest("[data-lb-link]")) hide(); });
 
     // Testimonial dots
