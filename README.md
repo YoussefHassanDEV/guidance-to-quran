@@ -1,4 +1,4 @@
-# Guidance to Quran — Online Quran Academy (static site)
+# Hedaya Academy — Online Quran Academy (static site)
 
 A fast, dependency-free rebuild of an online Quran academy website, deployed on GitHub Pages.
 

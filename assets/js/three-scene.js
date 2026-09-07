@@ -1,4 +1,4 @@
-/* Guidance to Quran — Three.js art scenes
+/* Hedaya Academy — Three.js art scenes
    1. Hero: morphing particle constellation (crescent → star → Quran → mosque) over a nebula shader
    2. Stats band: animated 8-fold Islamic geometric pattern (fragment shader)
    3. Courses banner: floating Arabic letters

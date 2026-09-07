@@ -1,4 +1,4 @@
-/* Guidance to Quran — site script (no dependencies) */
+/* Hedaya Academy — site script (no dependencies) */
 (function () {
   "use strict";
 
@@ -6,16 +6,23 @@
      Config — edit these for your own academy
   ------------------------------------------------------------------ */
   const SITE = {
-    name: "Guidance to Quran",
+    name: "Hedaya Academy",
     tagline: "Online Quran Academy",
     phoneDisplay: "+1 (202) 555-0148",
     phoneIntl: "12025550148",           // digits only, used for WhatsApp / tel:
-    email: "hello@guidancetoquran.example",
+    email: "hello@hedayaacademy.example",
     // Optional: paste a Formspree / Getform endpoint to receive form submissions by email.
     // Leave empty to fall back to WhatsApp + mailto (works on GitHub Pages with no backend).
     formEndpoint: "",
     socials: {
       facebook: "#", instagram: "#", youtube: "#", linkedin: "#", x: "#", tiktok: "#"
+    },
+    // Legal entity shown in the footer. Replace the placeholders with the real registration details.
+    legal: {
+      entity: "Hedaya Academy LLC",
+      registration: "Registered in Wyoming, USA",
+      ein: "EIN 00-0000000",
+      address: "30 N Gould St, Sheridan, WY 82801, USA"
     }
   };
 
@@ -181,7 +188,7 @@
         <div class="socials">${socials()}</div>
       </div></div>
       <div class="header" id="hdr"><div class="container">
-        <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="44" height="44"><span>${SITE.name}<small>${SITE.tagline}</small></span></a>
+        <a class="brand" href="index.html"><img src="assets/img/icon-192.png" alt="" width="44" height="44"><span>${SITE.name}<small>${SITE.tagline}</small></span></a>
         <nav class="nav" aria-label="Primary"><ul>${navList(false)}</ul></nav>
         <div class="header-actions">
           <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">${ICONS.sun}${ICONS.moon}</button>
@@ -192,7 +199,7 @@
       <div class="drawer" id="drawer" aria-hidden="true">
         <div class="backdrop"></div>
         <div class="panel" role="dialog" aria-label="Menu">
-          <div class="panel-head"><a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="40" height="40"><span>${SITE.name}</span></a><button class="icon-btn" id="drawer-close" aria-label="Close menu">${ICONS.close}</button></div>
+          <div class="panel-head"><a class="brand" href="index.html"><img src="assets/img/icon-192.png" alt="" width="40" height="40"><span>${SITE.name}</span></a><button class="icon-btn" id="drawer-close" aria-label="Close menu">${ICONS.close}</button></div>
           <nav aria-label="Mobile"><ul>${navList(true)}</ul></nav>
           <a class="btn btn-accent btn-block" href="free-trial.html">Book Free Trial Class</a>
           <a class="btn btn-whatsapp btn-block" style="margin-top:.6rem" href="${waLink("Assalamu alaikum, I would like to know more about your courses.")}" target="_blank" rel="noopener">${ICONS.whatsapp} WhatsApp us</a>
@@ -247,7 +254,7 @@
       <div class="container">
         <div class="top">
           <div>
-            <a class="brand" href="index.html"><img src="assets/img/logo.svg" alt="" width="44" height="44"><span>${SITE.name}<small>${SITE.tagline}</small></span></a>
+            <a class="brand" href="index.html"><img src="assets/img/icon-192.png" alt="" width="44" height="44"><span>${SITE.name}<small>${SITE.tagline}</small></span></a>
             <p style="font-size:.93rem">We help children and adults across the world learn to read, understand and love the Quran through live one-to-one classes with qualified, caring teachers.</p>
             <div class="badges"><span>${ICONS.shield} SSL secured</span><span>${ICONS.shield} Kid-safe classes</span><span>${ICONS.shield} Money-back trial</span></div>
             <div class="socials">${socials()}</div>
@@ -285,6 +292,12 @@
             <form class="newsletter" id="newsletter"><input type="email" placeholder="Your email" aria-label="Email" required><button class="btn btn-accent btn-sm" type="submit">Join</button></form>
           </div>
         </div>
+        <div class="legal">
+          <strong>${SITE.legal.entity}</strong>
+          <span>${SITE.legal.registration}</span>
+          <span>${SITE.legal.ein}</span>
+          <span>${SITE.legal.address}</span>
+        </div>
         <div class="bottom">
           <div>© ${y} ${SITE.name}. All rights reserved.</div>
           <ul><li><a href="about.html#faq">Privacy</a></li><li><a href="about.html#faq">Refund policy</a></li><li><a href="about.html#faq">Disclaimer</a></li></ul>
@@ -320,7 +333,7 @@
     const els = $$("[data-count]"); if (!els.length) return;
     const run = (el) => {
       const target = +el.dataset.count, suffix = el.dataset.suffix || "", dur = 1600, t0 = performance.now();
-      const step = (t) => { const p = Math.min(1, (t - t0) / dur), v = Math.floor(target * (1 - Math.pow(1 - p, 3))); el.textContent = v.toLocaleString() + suffix; if (p < 1) requestAnimationFrame(step); };
+      const step = (t) => { const p = Math.min(1, Math.max(0, (t - t0) / dur)), v = Math.floor(target * (1 - Math.pow(1 - p, 3))); el.textContent = v.toLocaleString() + suffix; if (p < 1) requestAnimationFrame(step); };
       requestAnimationFrame(step);
     };
     const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } }), { threshold: .5 });
