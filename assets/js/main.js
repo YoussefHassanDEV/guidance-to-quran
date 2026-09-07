@@ -587,7 +587,24 @@
       const d = e.target.closest("[data-lb-course]");
       if (d) { hide(); openCourse(d.dataset.lbCourse); }
     });
-    document.addEventListener("keydown", (e) => { const t = e.target.closest && e.target.closest(".course-card .thumb"); if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); t.click(); } });
+    document.addEventListener("keydown", (e) => { const t = e.target.closest && e.target.closest(".course-card .thumb, .post-card .cover"); if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); t.click(); } });
+
+    // Blog post covers
+    const posts = $$(".post-card");
+    if (posts.length) {
+      const postItems = posts.map((p) => {
+        const cover = $(".cover", p), title = $("h3", p), link = p.matches("a") ? p : $("h3 a, a.more", p);
+        const href = link ? link.getAttribute("href") : "#", date = $(".date", p);
+        return { src: photo(cover.dataset.photo, 1400), alt: title ? title.textContent : "", cap: `📖 ${title ? title.textContent : ""}${date ? " · " + date.textContent.split("·")[0].trim() : ""}`,
+          actions: `<a class="btn btn-light btn-sm" href="${href}" data-lb-link>Read article</a>` };
+      });
+      posts.forEach((p, i) => {
+        const cover = $(".cover", p); if (!cover) return;
+        cover.tabIndex = 0; cover.setAttribute("role", "button"); cover.setAttribute("aria-label", "View cover photo");
+        cover.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLb(postItems, i); });
+      });
+      lb.addEventListener("click", (e) => { if (e.target.closest("[data-lb-link]")) hide(); });
+    }
 
     // Testimonial dots
     const track = $(".testi-track");

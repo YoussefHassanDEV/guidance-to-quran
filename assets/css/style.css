@@ -798,3 +798,8 @@ body { overflow-x: hidden; }
 .lightbox .cap-actions { display: flex; gap: .5rem; }
 .lightbox .cap-actions:empty { display: none; }
 .lightbox .counter { position: absolute; top: 1.2rem; left: 1.5rem; color: rgba(255,255,255,.8); font-weight: 600; font-size: .9rem; }
+
+/* Blog cover lightbox */
+.post-card .cover { cursor: zoom-in; }
+.post-card .cover::before { content: "🔍"; position: absolute; top: .8rem; right: .8rem; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.9); display: grid; place-items: center; font-size: .85rem; opacity: 0; transform: scale(.6); transition: .25s; z-index: 2; }
+.post-card:hover .cover::before, .post-card .cover:focus-visible::before { opacity: 1; transform: none; }
