@@ -315,6 +315,27 @@
     document.body.appendChild(tt);
   }
 
+
+  /* ------------------------------------------------------------------
+     Cursor sparkles (desktop, fine pointer)
+  ------------------------------------------------------------------ */
+  function initSparkles() {
+    if (!matchMedia("(hover: hover) and (pointer: fine)").matches || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const c = document.createElement("canvas"); c.className = "sparkle-layer"; document.body.appendChild(c);
+    const g = c.getContext("2d"); let W, H; const dpr = Math.min(devicePixelRatio || 1, 2);
+    const size = () => { W = c.width = innerWidth * dpr; H = c.height = innerHeight * dpr; }; size(); addEventListener("resize", size);
+    const parts = [], colors = ["#f7b733", "#ffd166", "#7dd3fc", "#ffffff", "#ff6b9d"]; let last = 0;
+    addEventListener("pointermove", (e) => { const now = performance.now(); if (now - last < 28) return; last = now;
+      for (let i = 0; i < 2; i++) parts.push({ x: e.clientX * dpr, y: e.clientY * dpr, vx: (Math.random() - .5) * 1.4, vy: -Math.random() * 1.2 - .3, life: 1, r: (Math.random() * 3 + 2) * dpr, c: colors[(Math.random() * colors.length) | 0], rot: Math.random() * 6.28 }); }, { passive: true });
+    const star = (x, y, r, rot) => { g.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * .4 : r, a = rot + i * Math.PI / 4; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } g.closePath(); g.fill(); };
+    let idle = true;
+    const loop = () => { requestAnimationFrame(loop); if (!parts.length) { if (!idle) { g.clearRect(0, 0, W, H); idle = true; } return; } idle = false; g.clearRect(0, 0, W, H);
+      for (let i = parts.length - 1; i >= 0; i--) { const p = parts[i]; p.x += p.vx * dpr; p.y += p.vy * dpr; p.vy += .03; p.life -= .03; p.rot += .08; if (p.life <= 0) { parts.splice(i, 1); continue; }
+        g.globalAlpha = p.life; g.fillStyle = p.c; star(p.x, p.y, p.r * p.life, p.rot); }
+      g.globalAlpha = 1; };
+    loop();
+  }
+
   /* ------------------------------------------------------------------
      Reveal on scroll & counters
   ------------------------------------------------------------------ */
@@ -757,7 +778,7 @@
     renderHeader(); renderFooter();
     initAvatars();
     initCourses(); initPricing(); initTestimonials(); initForm();
-    initReveal(); initCounters(); initEffects(); initUX(); initArt();
+    initReveal(); initCounters(); initEffects(); initUX(); initArt(); initSparkles();
     // Smooth-scroll for in-page anchors with sticky offset
     document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const y = t.getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: y, behavior: "smooth" }); } });
   });

@@ -3,6 +3,10 @@
    2. Stats band: animated 8-fold Islamic geometric pattern (fragment shader)
    3. Courses banner: floating Arabic letters
    4. Globe: student world map (draggable)
+   5. Floating 3D motifs (stars / crescents / gems / hearts) — data-scene="crystals"
+   6. CTA band golden vortex — data-scene="cta"
+   7. Footer night sky with crescent moon and shooting stars
+   Scenes 5–7 mount lazily (no WebGL context until the host scrolls near).
    Requires window.THREE (r128 UMD). Fails silently without WebGL. */
 (function () {
   "use strict";
@@ -227,7 +231,7 @@
   ------------------------------------------------------------------ */
   function lettersScene() {
     const host = document.querySelector(".page-hero.photo .banner");
-    if (!host || document.body.dataset.page !== "courses") return;
+    if (!host) return;
     const canvas = document.createElement("canvas"); canvas.className = "letters-canvas"; canvas.setAttribute("aria-hidden", "true");
     host.appendChild(canvas);
     const renderer = makeRenderer(canvas); if (!renderer) { canvas.remove(); return; }
@@ -322,6 +326,166 @@
     tick();
   }
 
-  const start = () => { [heroScene, patternScene, lettersScene, globeScene].forEach((f) => { try { f(); } catch (e) { console.warn("scene failed", e); } }); };
+
+  /* ------------------------------------------------------------------
+     Shared: lazy scene mounting (a WebGL context is only created when the
+     host first scrolls near the viewport) and a small geometry library of
+     extruded Islamic motifs: 5-point star, crescent, gem, heart.
+  ------------------------------------------------------------------ */
+  function lazy(host, init) {
+    let done = false;
+    const go = () => { if (done) return; done = true; io.disconnect(); removeEventListener("scroll", onScroll); try { init(); } catch (e) { console.warn("scene failed", e); } };
+    const near = () => { const r = host.getBoundingClientRect(); return r.bottom > -200 && r.top < innerHeight + 200; };
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) go(); }, { rootMargin: "200px" });
+    // Some embedded / background contexts never deliver IntersectionObserver updates: poll on scroll as a fallback.
+    const onScroll = () => { if (near()) go(); };
+    io.observe(host); addEventListener("scroll", onScroll, { passive: true }); setTimeout(onScroll, 300);
+  }
+  function mountCanvas(host, cls) {
+    const canvas = document.createElement("canvas"); canvas.className = "scene-canvas " + (cls || ""); canvas.setAttribute("aria-hidden", "true");
+    host.classList.add("scene-host"); host.prepend(canvas); return canvas;
+  }
+  function starShape(outer = 1, inner = 0.45, points = 5) {
+    const sh = new THREE.Shape();
+    for (let i = 0; i < points * 2; i++) { const r = i % 2 ? inner : outer, a = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2; const x = Math.cos(a) * r, y = Math.sin(a) * r; i ? sh.lineTo(x, y) : sh.moveTo(x, y); }
+    sh.closePath(); return sh;
+  }
+  function crescentShape(r = 1) {
+    // Outer circle (radius r) minus an offset inner circle: two arcs joined at their intersections.
+    const sh = new THREE.Shape(), a = 0.896, b = 1.35;
+    sh.absarc(0, 0, r, a, Math.PI * 2 - a, false);
+    sh.absarc(0.45 * r, 0, 0.8 * r, -b, b, true);
+    return sh;
+  }
+  const extrude = (shape, depth) => { const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: depth * 0.4, bevelSize: depth * 0.35, bevelSegments: 3, curveSegments: 24 }); g.center(); return g; };
+  let _geo;
+  function motifGeometries() {
+    if (_geo) return _geo;
+    const heart = new THREE.Shape(); heart.moveTo(0, -0.9); heart.bezierCurveTo(0.9, -0.3, 1.1, 0.5, 0.5, 0.9); heart.bezierCurveTo(0.2, 1.1, 0, 0.8, 0, 0.6); heart.bezierCurveTo(0, 0.8, -0.2, 1.1, -0.5, 0.9); heart.bezierCurveTo(-1.1, 0.5, -0.9, -0.3, 0, -0.9);
+    _geo = { star: extrude(starShape(1, 0.48), 0.35), crescent: extrude(crescentShape(1), 0.3), gem: new THREE.OctahedronGeometry(0.9, 0), heart: extrude(heart, 0.3) };
+    return _geo;
+  }
+  const PALETTE = { gold: 0xf7b733, orange: 0xf26b2b, sky: 0x7dd3fc, pink: 0xff6b9d, mint: 0x86efac, white: 0xffffff };
+
+  /* ------------------------------------------------------------------
+     5. Floating 3D motifs: gold stars, crescents, gems and hearts drifting
+        with glow dust behind course cards, plans, forms, values...
+        Host: any element with data-scene="crystals"
+        Variants (data-scene-variant): stars | gems | hearts | mixed (default)
+  ------------------------------------------------------------------ */
+  function crystalsScene(host) {
+    const variant = host.dataset.sceneVariant || "mixed";
+    const canvas = mountCanvas(host, "crystals-canvas");
+    const renderer = makeRenderer(canvas, { antialias: !mobile }); if (!renderer) { canvas.remove(); return; }
+    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(40, 1, 0.1, 80); camera.position.set(0, 0, 18);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const key = new THREE.DirectionalLight(0xfff3d6, 1.1); key.position.set(4, 6, 8); scene.add(key);
+    const rim = new THREE.PointLight(PALETTE.sky, 1.2, 40); rim.position.set(-8, -4, 6); scene.add(rim);
+    const G = motifGeometries();
+    const kinds = { stars: ["star", "star", "crescent"], gems: ["gem", "gem", "star"], hearts: ["heart", "star", "heart"], mixed: ["star", "crescent", "gem"] }[variant] || ["star", "crescent", "gem"];
+    const cols = { stars: [PALETTE.gold, PALETTE.gold, PALETTE.white], gems: [PALETTE.sky, PALETTE.pink, PALETTE.gold], hearts: [PALETTE.pink, PALETTE.gold, PALETTE.orange], mixed: [PALETTE.gold, PALETTE.gold, PALETTE.sky] }[variant] || [PALETTE.gold, PALETTE.gold, PALETTE.sky];
+    const n = mobile ? 7 : 14, meshes = [];
+    const spread = () => { const w = Math.max(6, host.clientWidth / Math.max(1, host.clientHeight) * 8.5); return { x: rand(-w, w), y: rand(-9, 9) }; };
+    for (let i = 0; i < n; i++) {
+      const k = i % kinds.length;
+      const mat = new THREE.MeshStandardMaterial({ color: cols[k], metalness: 0.7, roughness: 0.25, transparent: true, opacity: 0.85, emissive: cols[k], emissiveIntensity: 0.12 });
+      const m = new THREE.Mesh(G[kinds[k]], mat); const p = spread(); const s = rand(0.3, 0.7);
+      m.position.set(p.x, p.y, rand(-7, -1)); m.scale.setScalar(s); m.rotation.set(rand(0, 6), rand(0, 6), rand(0, 6));
+      m.userData = { rx: rand(-0.4, 0.4), ry: rand(-0.6, 0.6), vy: rand(0.12, 0.4), sway: rand(0.2, 0.7), phase: rand(0, 6.28), base: p.x };
+      scene.add(m); meshes.push(m);
+    }
+    const pc = mobile ? 60 : 140, pos = new Float32Array(pc * 3);
+    for (let i = 0; i < pc; i++) { const p = spread(); pos[i * 3] = p.x; pos[i * 3 + 1] = p.y; pos[i * 3 + 2] = rand(-8, 0); }
+    const dustG = new THREE.BufferGeometry(); dustG.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const dust = new THREE.Points(dustG, new THREE.PointsMaterial({ map: glowTexture(), color: variant === "hearts" ? PALETTE.pink : PALETTE.gold, size: mobile ? 0.35 : 0.45, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(dust);
+    const resize = () => fit(renderer, camera, host); resize(); window.addEventListener("resize", resize);
+    let visible = true; observeVisible(host, (v) => visible = v);
+    const clock = new THREE.Clock();
+    const tick = () => {
+      requestAnimationFrame(tick); if (!visible) return;
+      const dt = Math.min(0.05, clock.getDelta() || 0.016), t = clock.getElapsedTime();
+      if (!reduce) {
+        meshes.forEach((m) => { const u = m.userData; m.rotation.x += u.rx * dt; m.rotation.y += u.ry * dt; m.position.y += u.vy * dt; m.position.x = u.base + Math.sin(t * u.sway + u.phase) * 0.8; if (m.position.y > 10) m.position.y = -10; });
+        dust.rotation.z = t * 0.02; dust.position.y = Math.sin(t * 0.3) * 0.5;
+      }
+      renderer.render(scene, camera);
+    };
+    tick();
+  }
+
+  /* ------------------------------------------------------------------
+     6. CTA band: a golden vortex of sparkles around a spinning 3D star
+  ------------------------------------------------------------------ */
+  function ctaScene(host) {
+    const canvas = mountCanvas(host, "cta-canvas");
+    const renderer = makeRenderer(canvas); if (!renderer) { canvas.remove(); return; }
+    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(45, 1, 0.1, 60); camera.position.z = 14;
+    const n = mobile ? 250 : 700, pos = new Float32Array(n * 3), seeds = [];
+    for (let i = 0; i < n; i++) seeds.push({ a: rand(0, 6.28), r: rand(1, 12), y: rand(-4, 4), sp: rand(0.2, 0.8), w: rand(0.4, 1.2) });
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const pts = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTexture(), color: 0xffffff, size: mobile ? 0.28 : 0.34, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pts);
+    const star = new THREE.Mesh(motifGeometries().star, new THREE.MeshStandardMaterial({ color: 0xfff1c9, metalness: 0.6, roughness: 0.3, transparent: true, opacity: 0.35 }));
+    star.scale.setScalar(mobile ? 2.2 : 3.2); star.position.set(mobile ? 0 : 6, 0, -4); scene.add(star);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8)); const l = new THREE.DirectionalLight(0xffffff, 1); l.position.set(3, 5, 6); scene.add(l);
+    const resize = () => fit(renderer, camera, host); resize(); window.addEventListener("resize", resize);
+    let visible = true; observeVisible(host, (v) => visible = v);
+    const clock = new THREE.Clock();
+    const tick = () => {
+      requestAnimationFrame(tick); if (!visible) return;
+      const t = reduce ? 3 : clock.getElapsedTime(), ar = host.clientWidth / Math.max(1, host.clientHeight);
+      const arr = g.attributes.position.array;
+      seeds.forEach((s, i) => { const a = s.a + t * s.sp, r = s.r; arr[i * 3] = Math.cos(a) * r * Math.max(1, ar * 0.5); arr[i * 3 + 1] = Math.sin(a * 0.5) * 2 + s.y * 0.6 + Math.sin(t * s.w + i) * 0.4; arr[i * 3 + 2] = Math.sin(a) * 2 - 2; });
+      g.attributes.position.needsUpdate = true;
+      if (!reduce) { star.rotation.y = t * 0.35; star.rotation.x = Math.sin(t * 0.5) * 0.3; }
+      renderer.render(scene, camera);
+    };
+    tick();
+  }
+
+  /* ------------------------------------------------------------------
+     7. Footer: night sky with a star-field, crescent moon and shooting stars
+  ------------------------------------------------------------------ */
+  function footerScene(host) {
+    const canvas = mountCanvas(host, "sky-canvas");
+    const renderer = makeRenderer(canvas); if (!renderer) { canvas.remove(); return; }
+    const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100); camera.position.z = 20;
+    const n = mobile ? 180 : 420, pos = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { pos[i * 3] = rand(-40, 40); pos[i * 3 + 1] = rand(-14, 14); pos[i * 3 + 2] = rand(-30, 0); }
+    const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    const stars = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTexture(), color: 0xdbe7ff, size: 0.32, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(stars);
+    const moon = new THREE.Mesh(motifGeometries().crescent, new THREE.MeshStandardMaterial({ color: PALETTE.gold, emissive: PALETTE.gold, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.4 }));
+    moon.scale.setScalar(mobile ? 1.2 : 1.9); moon.rotation.z = 0.4; scene.add(moon);
+    // Keep the moon in an empty corner: top-left of the footer on desktop, top-right on phones.
+    const placeMoon = () => { const halfH = Math.tan(THREE.MathUtils.degToRad(30)) * 26, halfW = halfH * (host.clientWidth / Math.max(1, host.clientHeight)); moon.position.set(mobile ? halfW * 0.74 : -halfW * 0.94, mobile ? halfH * 0.9 : halfH * 0.66, -6); };
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6)); const l = new THREE.DirectionalLight(0xffffff, 0.8); l.position.set(-3, 5, 8); scene.add(l);
+    const shooters = [];
+    for (let i = 0; i < (mobile ? 2 : 4); i++) {
+      const lg = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(-2.5, 0.9, 0)]);
+      const ln = new THREE.Line(lg, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 })); scene.add(ln);
+      shooters.push({ ln, t0: rand(0, 8), life: 0 });
+    }
+    const resize = () => { fit(renderer, camera, host); placeMoon(); }; resize(); window.addEventListener("resize", resize);
+    let visible = true; observeVisible(host, (v) => visible = v);
+    const clock = new THREE.Clock();
+    const tick = () => {
+      requestAnimationFrame(tick); if (!visible) return;
+      const t = clock.getElapsedTime();
+      if (!reduce) {
+        stars.rotation.z = t * 0.004; stars.material.opacity = 0.75 + Math.sin(t * 1.3) * 0.15;
+        moon.rotation.y = Math.sin(t * 0.3) * 0.25;
+        shooters.forEach((s) => { if (t > s.t0) { s.life += 0.02; const p = s.life; s.ln.position.set(18 - p * 40, 10 - p * 14, -5); s.ln.material.opacity = Math.sin(Math.min(1, p) * Math.PI) * 0.9; if (p >= 1) { s.life = 0; s.t0 = t + rand(3, 9); s.ln.material.opacity = 0; } } });
+      }
+      renderer.render(scene, camera);
+    };
+    tick();
+  }
+
+  function mountDataScenes() {
+    document.querySelectorAll('[data-scene="crystals"]').forEach((h) => { if (mobile && h.dataset.sceneVariant === "hearts") return; lazy(h, () => crystalsScene(h)); });
+    document.querySelectorAll('[data-scene="cta"]').forEach((h) => lazy(h, () => ctaScene(h)));
+    const footer = document.querySelector(".footer"); if (footer) lazy(footer, () => footerScene(footer));
+  }
+
+  const start = () => { [heroScene, patternScene, lettersScene, globeScene, mountDataScenes].forEach((f) => { try { f(); } catch (e) { console.warn("scene failed", e); } }); };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();
