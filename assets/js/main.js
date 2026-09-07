@@ -509,6 +509,53 @@
       }, { passive: true });
     }
   }
+  /* ------------------------------------------------------------------
+     UX extras: lightbox, ripple, testimonial dots, mobile CTA bar
+  ------------------------------------------------------------------ */
+  function initUX() {
+    // Button ripple
+    document.addEventListener("pointerdown", (e) => {
+      const b = e.target.closest(".btn"); if (!b) return;
+      const r = b.getBoundingClientRect(), s = Math.max(r.width, r.height);
+      const rip = document.createElement("span"); rip.className = "ripple";
+      rip.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX - r.left - s / 2}px;top:${e.clientY - r.top - s / 2}px`;
+      b.appendChild(rip); setTimeout(() => rip.remove(), 700);
+    });
+
+    // Gallery lightbox
+    const figs = $$(".gallery figure");
+    if (figs.length) {
+      const lb = document.createElement("div"); lb.className = "lightbox"; lb.setAttribute("role", "dialog"); lb.setAttribute("aria-label", "Photo viewer");
+      lb.innerHTML = `<img alt=""><div class="cap"></div><button class="prev" aria-label="Previous">‹</button><button class="next" aria-label="Next">›</button><button class="close" aria-label="Close">×</button>`;
+      document.body.appendChild(lb);
+      let idx = 0;
+      const show = (i) => { idx = (i + figs.length) % figs.length; const img = $("img", figs[idx]); $("img", lb).src = img.src.replace(/w=\d+/, "w=1400"); $("img", lb).alt = img.alt; $(".cap", lb).textContent = $("figcaption", figs[idx]).textContent; lb.classList.add("open"); document.body.style.overflow = "hidden"; };
+      const hide = () => { lb.classList.remove("open"); document.body.style.overflow = ""; };
+      figs.forEach((f, i) => { f.tabIndex = 0; f.addEventListener("click", () => show(i)); f.addEventListener("keydown", (e) => { if (e.key === "Enter") show(i); }); });
+      $(".prev", lb).addEventListener("click", () => show(idx - 1)); $(".next", lb).addEventListener("click", () => show(idx + 1)); $(".close", lb).addEventListener("click", hide);
+      lb.addEventListener("click", (e) => { if (e.target === lb) hide(); });
+      document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") hide(); if (e.key === "ArrowLeft") show(idx - 1); if (e.key === "ArrowRight") show(idx + 1); });
+    }
+
+    // Testimonial dots
+    const track = $(".testi-track");
+    if (track) {
+      const items = $$(".testi", track), dots = document.createElement("div"); dots.className = "testi-dots";
+      dots.innerHTML = items.map((_, i) => `<button type="button" aria-label="Go to testimonial ${i + 1}"${i ? "" : ' class="active"'}></button>`).join("");
+      track.parentNode.appendChild(dots);
+      dots.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; const i = [...dots.children].indexOf(b); items[i].scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" }); });
+      track.addEventListener("scroll", () => { const w = items[0].getBoundingClientRect().width + 24, i = Math.round(track.scrollLeft / w); [...dots.children].forEach((d, j) => d.classList.toggle("active", j === i)); }, { passive: true });
+    }
+
+    // Mobile sticky CTA
+    if (CURRENT !== "trial") {
+      const bar = document.createElement("div"); bar.className = "mobile-cta";
+      bar.innerHTML = `<a class="btn btn-whatsapp" href="${waLink("Assalamu alaikum! I'd like to book a free trial class.")}" target="_blank" rel="noopener">${ICONS.whatsapp} WhatsApp</a><a class="btn btn-accent" href="free-trial.html">🎉 Free trial</a>`;
+      document.body.appendChild(bar);
+      window.addEventListener("scroll", () => bar.classList.toggle("show", window.scrollY > 350), { passive: true });
+    }
+  }
+
   function initAvatars() {
     $$("[data-avatar]").forEach((el) => { const img = new Image(); img.alt = ""; img.width = 120; img.height = 120; img.loading = "lazy"; img.src = avatar(el.dataset.avatar, el.dataset.style || "adventurer"); el.textContent = ""; el.appendChild(img); });
     $$("[data-photo]").forEach((el) => { const id = el.dataset.photo, w = +el.dataset.w || 900; if (el.tagName === "IMG") el.src = photo(id, w); else el.style.backgroundImage = `url('${photo(id, w)}')`; });
@@ -521,7 +568,7 @@
     renderHeader(); renderFooter();
     initAvatars();
     initCourses(); initPricing(); initTestimonials(); initForm();
-    initReveal(); initCounters(); initEffects();
+    initReveal(); initCounters(); initEffects(); initUX();
     // Smooth-scroll for in-page anchors with sticky offset
     document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const y = t.getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: y, behavior: "smooth" }); } });
   });
