@@ -21,7 +21,7 @@
   ------------------------------------------------------------------ */
   function heroScene() {
     const host = document.querySelector(".hero");
-    if (!host) return;
+    if (!host || innerWidth < 700) return; // skip the heavy hero scene on phones
     const canvas = document.createElement("canvas");
     canvas.className = "hero-canvas"; canvas.setAttribute("aria-hidden", "true");
     host.prepend(canvas);
