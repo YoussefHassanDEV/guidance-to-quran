@@ -333,7 +333,7 @@
   ------------------------------------------------------------------ */
   function courseCard(c) {
     return `<article class="card course-card reveal tilt" id="${c.id}" data-cat="${c.cat}" data-title="${esc(c.title.toLowerCase())}">
-      <div class="thumb ${c.theme}" style="background-image:url('${photo(PHOTOS[c.id], 700)}')"><span class="arabic-bg">${c.ar}</span><span class="tag">${c.level}</span><span class="emoji">${EMOJI[c.id] || "📚"}</span><span>${esc(c.title)}</span></div>
+      <div class="thumb ${c.theme}" style="background-image:url('${photo(PHOTOS[c.id], 700)}')" tabindex="0" role="button" aria-label="View photo for ${esc(c.title)}"><span class="arabic-bg">${c.ar}</span><span class="tag">${c.level}</span><span class="emoji">${EMOJI[c.id] || "📚"}</span><span>${esc(c.title)}</span></div>
       <div class="body">
         <div class="meta"><span>${ICONS.users} Ages ${c.age}</span><span>${ICONS.clock} ${c.weeks}</span><span>${ICONS.book} 1-to-1 live</span></div>
         <p class="muted" style="font-size:.93rem">${esc(c.blurb)}</p>
@@ -545,20 +545,49 @@
       b.appendChild(rip); setTimeout(() => rip.remove(), 700);
     });
 
-    // Gallery lightbox
+    // Shared lightbox (gallery photos + course covers)
+    const lb = document.createElement("div"); lb.className = "lightbox"; lb.setAttribute("role", "dialog"); lb.setAttribute("aria-label", "Photo viewer");
+    lb.innerHTML = `<figure><img alt=""><figcaption class="cap"><span class="cap-text"></span><span class="cap-actions"></span></figcaption></figure><button class="prev" aria-label="Previous">‹</button><button class="next" aria-label="Next">›</button><button class="close" aria-label="Close">×</button><div class="counter"></div>`;
+    document.body.appendChild(lb);
+    let items = [], idx = 0, lastFocus = null;
+    const render = () => {
+      const it = items[idx], img = $("img", lb);
+      img.src = it.src; img.alt = it.alt || "";
+      $(".cap-text", lb).textContent = it.cap || "";
+      $(".cap-actions", lb).innerHTML = it.actions || "";
+      $(".counter", lb).textContent = items.length > 1 ? `${idx + 1} / ${items.length}` : "";
+      lb.querySelectorAll(".prev, .next").forEach((b) => b.style.display = items.length > 1 ? "" : "none");
+    };
+    const openLb = (list, i) => { items = list; idx = i; lastFocus = document.activeElement; render(); lb.classList.add("open"); document.body.style.overflow = "hidden"; $(".close", lb).focus(); };
+    const step = (d) => { idx = (idx + d + items.length) % items.length; render(); };
+    const hide = () => { lb.classList.remove("open"); document.body.style.overflow = ""; if (lastFocus) lastFocus.focus(); };
+    $(".prev", lb).addEventListener("click", () => step(-1)); $(".next", lb).addEventListener("click", () => step(1)); $(".close", lb).addEventListener("click", hide);
+    lb.addEventListener("click", (e) => { if (e.target === lb) hide(); });
+    document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") hide(); if (e.key === "ArrowLeft") step(-1); if (e.key === "ArrowRight") step(1); });
+    // Swipe on touch
+    let sx = 0; lb.addEventListener("touchstart", (e) => { sx = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener("touchend", (e) => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1); });
+
+    // Gallery photos
     const figs = $$(".gallery figure");
     if (figs.length) {
-      const lb = document.createElement("div"); lb.className = "lightbox"; lb.setAttribute("role", "dialog"); lb.setAttribute("aria-label", "Photo viewer");
-      lb.innerHTML = `<img alt=""><div class="cap"></div><button class="prev" aria-label="Previous">‹</button><button class="next" aria-label="Next">›</button><button class="close" aria-label="Close">×</button>`;
-      document.body.appendChild(lb);
-      let idx = 0;
-      const show = (i) => { idx = (i + figs.length) % figs.length; const img = $("img", figs[idx]); $("img", lb).src = img.src.replace(/w=\d+/, "w=1400"); $("img", lb).alt = img.alt; $(".cap", lb).textContent = $("figcaption", figs[idx]).textContent; lb.classList.add("open"); document.body.style.overflow = "hidden"; };
-      const hide = () => { lb.classList.remove("open"); document.body.style.overflow = ""; };
-      figs.forEach((f, i) => { f.tabIndex = 0; f.addEventListener("click", () => show(i)); f.addEventListener("keydown", (e) => { if (e.key === "Enter") show(i); }); });
-      $(".prev", lb).addEventListener("click", () => show(idx - 1)); $(".next", lb).addEventListener("click", () => show(idx + 1)); $(".close", lb).addEventListener("click", hide);
-      lb.addEventListener("click", (e) => { if (e.target === lb) hide(); });
-      document.addEventListener("keydown", (e) => { if (!lb.classList.contains("open")) return; if (e.key === "Escape") hide(); if (e.key === "ArrowLeft") show(idx - 1); if (e.key === "ArrowRight") show(idx + 1); });
+      const list = figs.map((f) => { const img = $("img", f); return { src: img.src.replace(/w=\d+/, "w=1400"), alt: img.alt, cap: $("figcaption", f).textContent }; });
+      figs.forEach((f, i) => { f.tabIndex = 0; f.setAttribute("role", "button"); f.addEventListener("click", () => openLb(list, i)); f.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(list, i); } }); });
     }
+
+    // Course covers: click the photo to view it large, with quick actions
+    const courseItems = () => $$(".course-card").filter((c) => c.style.display !== "none").map((c) => {
+      const data = COURSES.find((x) => x.id === c.id) || {};
+      return { id: c.id, src: photo(PHOTOS[c.id], 1400), alt: data.title, cap: `${EMOJI[c.id] || "📚"} ${data.title} · ${data.level} · Ages ${data.age}`,
+        actions: `<button class="btn btn-light btn-sm" data-lb-course="${c.id}">Details</button><a class="btn btn-accent btn-sm" href="free-trial.html?course=${c.id}">Free trial</a>` };
+    });
+    document.addEventListener("click", (e) => {
+      const thumb = e.target.closest(".course-card .thumb");
+      if (thumb) { const list = courseItems(), i = list.findIndex((x) => x.id === thumb.closest(".course-card").id); if (i > -1) openLb(list, i); return; }
+      const d = e.target.closest("[data-lb-course]");
+      if (d) { hide(); openCourse(d.dataset.lbCourse); }
+    });
+    document.addEventListener("keydown", (e) => { const t = e.target.closest && e.target.closest(".course-card .thumb"); if (t && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); t.click(); } });
 
     // Testimonial dots
     const track = $(".testi-track");

@@ -733,8 +733,8 @@ body { overflow-x: hidden; }
 .lightbox img { max-width: min(92vw, 1100px); max-height: 82vh; border-radius: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.6); transform: scale(.92); transition: transform .3s var(--ease); }
 .lightbox.open img { transform: none; }
 .lightbox .cap { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); color: #fff; font-weight: 600; background: rgba(255,255,255,.12); padding: .5rem 1rem; border-radius: 999px; }
-.lightbox button { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgba(255,255,255,.15); color: #fff; font-size: 1.4rem; cursor: pointer; }
-.lightbox button:hover { background: var(--orange); }
+.lightbox > button { position: absolute; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; border: 0; background: rgba(255,255,255,.15); color: #fff; font-size: 1.4rem; cursor: pointer; }
+.lightbox > button:hover { background: var(--orange); }
 .lightbox .prev { left: 1rem; } .lightbox .next { right: 1rem; }
 .lightbox .close { top: 1rem; right: 1rem; transform: none; }
 
@@ -788,3 +788,13 @@ body { overflow-x: hidden; }
 #globe { max-width: 720px; }
 #globe .globe-label { font-size: 1rem; padding: .6rem 1.2rem; }
 @media (max-width: 1024px) { #globe { max-width: 100%; } }
+
+/* Lightbox v2: course covers + actions */
+.course-card .thumb { cursor: zoom-in; }
+.course-card .thumb::after { content: "🔍"; position: absolute; top: 1rem; right: 1rem; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.9); display: grid; place-items: center; font-size: .9rem; opacity: 0; transform: scale(.6); transition: .25s; }
+.course-card:hover .thumb::after, .course-card .thumb:focus-visible::after { opacity: 1; transform: none; }
+.lightbox figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; max-width: min(92vw, 1100px); }
+.lightbox .cap { position: static; transform: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .6rem 1rem; max-width: 100%; }
+.lightbox .cap-actions { display: flex; gap: .5rem; }
+.lightbox .cap-actions:empty { display: none; }
+.lightbox .counter { position: absolute; top: 1.2rem; left: 1.5rem; color: rgba(255,255,255,.8); font-weight: 600; font-size: .9rem; }
