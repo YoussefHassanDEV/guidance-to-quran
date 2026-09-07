@@ -455,6 +455,7 @@
     const qs = new URLSearchParams(location.search);
     if (qs.get("course") && courseSel) courseSel.value = qs.get("course");
     const planSel = $("#f-plan"); if (qs.get("plan") && planSel) planSel.value = qs.get("plan");
+    const teacherSel = $("#f-teacher"); if (qs.get("teacher") && teacherSel) teacherSel.value = qs.get("teacher") === "female" ? "Female teacher" : "Male teacher";
     // Timezone helper
     const tz = $("#tz"); if (tz) { try { tz.textContent = Intl.DateTimeFormat().resolvedOptions().timeZone.replace("_", " "); } catch (e) { tz.textContent = "your local time"; } }
 
@@ -553,6 +554,7 @@
     const render = () => {
       const it = items[idx], img = $("img", lb);
       img.src = it.src; img.alt = it.alt || "";
+      $("figure", lb).className = it.cls || "";
       $(".cap-text", lb).textContent = it.cap || "";
       $(".cap-actions", lb).innerHTML = it.actions || "";
       $(".counter", lb).textContent = items.length > 1 ? `${idx + 1} / ${items.length}` : "";
@@ -604,6 +606,25 @@
         cover.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openLb(postItems, i); });
       });
       lb.addEventListener("click", (e) => { if (e.target.closest("[data-lb-link]")) hide(); });
+    }
+
+    // Faculty avatars: large circular portrait with name, role and qualifications
+    const staff = $$(".faculty-card");
+    if (staff.length) {
+      const staffItems = staff.map((c) => {
+        const name = $("h3", c)?.textContent || "", role = $(".role", c)?.textContent || "", tags = $$(".tags span", c).map((t) => t.textContent).join(" · ");
+        const female = /female|ustadha|hafiza|alimah|\bms\b/i.test(role + " " + name);
+        return { src: avatar($(".avatar", c)?.dataset.avatar || name), alt: name, cls: "avatar-view", cap: `${name} · ${role}${tags ? " · " + tags : ""}`,
+          actions: `<a class="btn btn-accent btn-sm" href="free-trial.html?teacher=${female ? "female" : "male"}" data-lb-link>Book a trial with ${esc(name.split(" ").slice(-1)[0])}</a>` };
+      });
+      staff.forEach((c, i) => {
+        const av = $(".avatar", c); if (!av) return;
+        av.tabIndex = 0; av.setAttribute("role", "button"); av.setAttribute("aria-label", `View ${$("h3", c)?.textContent || "teacher"}`);
+        av.style.cursor = "zoom-in";
+        av.addEventListener("click", () => openLb(staffItems, i));
+        av.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(staffItems, i); } });
+      });
+      if (!posts.length) lb.addEventListener("click", (e) => { if (e.target.closest("[data-lb-link]")) hide(); });
     }
 
     // Testimonial dots
