@@ -44,6 +44,20 @@
 
   const CURRENT = (document.body.dataset.page || "home").toLowerCase();
 
+  /* Unsplash photos (free licence, CDN hotlinking permitted) */
+  const photo = (id, w = 900) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
+  const PHOTOS = {
+    qaida: "photo-1609599006353-e629aaabfeae", nazra: "photo-1542816417-0983c9c9ad53", tajweed: "photo-1576764402988-7143f9cca90a",
+    hifz: "photo-1589462135796-2b46e4bdd7fe", tafseer: "photo-1580220810949-e7ddee6a4954", translation: "photo-1575645513913-c002ea3b2e01",
+    scholar: "photo-1590075865003-e48277faa558", seerah: "photo-1600814832809-579119f47045", arabic: "photo-1596125160970-6f02eeba00d3",
+    urdu: "photo-1712249239167-18cb9e056ee6", english: "photo-1758612898312-708f2ffdcd53", duas: "photo-1574246604907-db69e30ddb97",
+    tutoring: "photo-1623076189461-f7706b741c04", ramadan: "photo-1592326871020-04f58c1a52f3"
+  };
+  const EMOJI = { qaida: "🔤", nazra: "📖", tajweed: "🎙️", hifz: "🧠", tafseer: "💡", translation: "🌍", scholar: "🎓", seerah: "🕌", arabic: "✍️", urdu: "🗣️", english: "🇬🇧", duas: "🤲", tutoring: "🧮", ramadan: "🌙" };
+  /* Cartoon avatars (DiceBear, free) */
+  const avatar = (seed, style = "adventurer") => `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=ffdfbf,c0aede,b6e3f4,d1d4f9,ffd5dc&radius=50`;
+  window.GTQ = { photo, PHOTOS, avatar };
+
   /* ------------------------------------------------------------------
      Data
   ------------------------------------------------------------------ */
@@ -273,6 +287,11 @@
     if (!("IntersectionObserver" in window)) { els.forEach((e) => e.classList.add("in")); return; }
     const io = new IntersectionObserver((entries) => entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: .12 });
     els.forEach((e, i) => { e.style.transitionDelay = `${(i % 4) * 80}ms`; io.observe(e); });
+    // Fallback: some embedded/hidden-tab contexts never deliver IO updates; check on scroll too.
+    let pending = false;
+    const sweep = () => { pending = false; const vh = innerHeight; els.forEach((e) => { if (e.classList.contains("in")) return; const r = e.getBoundingClientRect(); if (r.top < vh * 0.92 && r.bottom > 0) { e.classList.add("in"); io.unobserve(e); } }); };
+    const onScroll = () => { if (!pending) { pending = true; setTimeout(sweep, 60); } };
+    window.addEventListener("scroll", onScroll, { passive: true }); window.addEventListener("resize", onScroll); setTimeout(sweep, 400);
   }
   function initCounters() {
     const els = $$("[data-count]"); if (!els.length) return;
@@ -290,8 +309,8 @@
      Courses
   ------------------------------------------------------------------ */
   function courseCard(c) {
-    return `<article class="card course-card reveal" id="${c.id}" data-cat="${c.cat}" data-title="${esc(c.title.toLowerCase())}">
-      <div class="thumb ${c.theme}"><span class="arabic-bg">${c.ar}</span><span class="tag">${c.level}</span><span>${esc(c.title)}</span></div>
+    return `<article class="card course-card reveal tilt" id="${c.id}" data-cat="${c.cat}" data-title="${esc(c.title.toLowerCase())}">
+      <div class="thumb ${c.theme}" style="background-image:url('${photo(PHOTOS[c.id], 700)}')"><span class="arabic-bg">${c.ar}</span><span class="tag">${c.level}</span><span class="emoji">${EMOJI[c.id] || "📚"}</span><span>${esc(c.title)}</span></div>
       <div class="body">
         <div class="meta"><span>${ICONS.users} Ages ${c.age}</span><span>${ICONS.clock} ${c.weeks}</span><span>${ICONS.book} 1-to-1 live</span></div>
         <p class="muted" style="font-size:.93rem">${esc(c.blurb)}</p>
@@ -339,6 +358,7 @@
     const c = COURSES.find((x) => x.id === id); if (!c) return;
     const m = ensureModal();
     const head = m.querySelector(".head"); head.className = "head " + c.theme;
+    head.style.cssText = `background-image:linear-gradient(180deg,rgba(10,20,40,.35),rgba(10,20,40,.75)),url('${photo(PHOTOS[c.id], 900)}');background-size:cover;background-position:center;min-height:180px;display:flex;flex-direction:column;justify-content:flex-end`;
     m.querySelector("h2").textContent = c.title;
     m.querySelector(".sub").textContent = `${c.level} · Ages ${c.age} · ${c.weeks}`;
     m.querySelector(".body").innerHTML = `
@@ -450,12 +470,58 @@
   }
 
   /* ------------------------------------------------------------------
+     3D tilt, parallax, progress bar, cursor glow, cartoon avatars
+  ------------------------------------------------------------------ */
+  function initEffects() {
+    const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Scroll progress bar
+    const bar = document.createElement("div"); bar.className = "progress"; document.body.appendChild(bar);
+    const prog = () => { const h = document.documentElement; bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%"; };
+    window.addEventListener("scroll", prog, { passive: true }); prog();
+
+    if (!fine || reduce) return;
+
+    // Cursor glow
+    const glow = document.createElement("div"); glow.className = "glow"; document.body.appendChild(glow);
+    window.addEventListener("pointermove", (e) => { glow.style.left = e.clientX + "px"; glow.style.top = e.clientY + "px"; glow.classList.add("on"); }, { passive: true });
+
+    // Tilt cards (delegated so injected cards work too)
+    const tiltables = () => $$(".tilt, .card:not(.plan):not(.testi)");
+    tiltables().forEach((el) => { if (!$(".shine", el)) { el.classList.add("tilt"); const s = document.createElement("span"); s.className = "shine"; el.appendChild(s); } });
+    document.addEventListener("pointermove", (e) => {
+      const el = e.target.closest(".tilt"); if (!el) return;
+      const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      el.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 10}deg) rotateY(${(x - 0.5) * 10}deg) translateY(-4px)`;
+      el.style.setProperty("--mx", x * 100 + "%"); el.style.setProperty("--my", y * 100 + "%");
+    }, { passive: true });
+    document.addEventListener("pointerout", (e) => { const el = e.target.closest(".tilt"); if (el && !el.contains(e.relatedTarget)) el.style.transform = ""; });
+    new MutationObserver(() => tiltables().forEach((el) => { if (!$(".shine", el)) { el.classList.add("tilt"); const s = document.createElement("span"); s.className = "shine"; el.appendChild(s); } })).observe(document.body, { childList: true, subtree: true });
+
+    // Hero parallax
+    const scene = $(".hero-scene");
+    if (scene) {
+      const layers = $$(".photo, .mascot, .chip, .book3d-wrap", scene);
+      scene.closest(".hero").addEventListener("pointermove", (e) => {
+        const r = scene.getBoundingClientRect(), dx = (e.clientX - (r.left + r.width / 2)) / r.width, dy = (e.clientY - (r.top + r.height / 2)) / r.height;
+        layers.forEach((l, i) => { const d = (i % 3 + 1) * 8; l.style.translate = `${dx * d}px ${dy * d}px`; });
+      }, { passive: true });
+    }
+  }
+  function initAvatars() {
+    $$("[data-avatar]").forEach((el) => { const img = new Image(); img.alt = ""; img.width = 120; img.height = 120; img.loading = "lazy"; img.src = avatar(el.dataset.avatar, el.dataset.style || "adventurer"); el.textContent = ""; el.appendChild(img); });
+    $$("[data-photo]").forEach((el) => { const id = el.dataset.photo, w = +el.dataset.w || 900; if (el.tagName === "IMG") el.src = photo(id, w); else el.style.backgroundImage = `url('${photo(id, w)}')`; });
+  }
+
+  /* ------------------------------------------------------------------
      Init
   ------------------------------------------------------------------ */
   document.addEventListener("DOMContentLoaded", () => {
     renderHeader(); renderFooter();
+    initAvatars();
     initCourses(); initPricing(); initTestimonials(); initForm();
-    initReveal(); initCounters();
+    initReveal(); initCounters(); initEffects();
     // Smooth-scroll for in-page anchors with sticky offset
     document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const y = t.getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: y, behavior: "smooth" }); } });
   });
