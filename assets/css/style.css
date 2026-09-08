@@ -348,7 +348,8 @@ ul.checks svg, .checks li > svg { width: 20px; height: 20px; flex: none; color: 
 @keyframes swing { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
 .wavy { position: relative; display: inline-block; z-index: 0; }
 .wavy::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.1em; height: .32em; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0 12 Q 12 2 25 12 T 50 12 T 75 12 T 100 12' fill='none' stroke='%23f7b733' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x; background-size: 60px 100%; z-index: -1; }
-.split .ch { display: inline-block; opacity: 0; transform: translateY(.6em) rotate(6deg) scale(.8); animation: chIn .7s var(--ease) forwards; }
+.letters .w { display: inline-block; white-space: nowrap; }
+.letters .ch { display: inline-block; opacity: 0; transform: translateY(.6em) rotate(6deg) scale(.8); animation: chIn .7s var(--ease) forwards; }
 @keyframes chIn { to { opacity: 1; transform: none; } }
 
 /* Marquee */
@@ -956,7 +957,7 @@ body:not(:has(.mobile-cta)) .float-wa, body:not(:has(.mobile-cta)) .to-top { bot
   .reveal { opacity: 1; transform: none; transition: none; }
   .ticker .track, .float-wa, .book3d, .shapes span, .hero-scene .photo, .hero-scene .mascot, .hero-scene .chip, .sparkle, .cta-band .mascot, .photo-frame img.sticker,
   .grad-text, .stats .num, .btn-accent, .divider svg path, .lantern { animation: none !important; }
-  .split .ch { animation: none; opacity: 1; transform: none; }
+  .letters .ch { animation: none; opacity: 1; transform: none; }
   .section-head h2::after { transform: none; transition: none; }
   .curtain, .sparkle-layer { display: none; }
 }

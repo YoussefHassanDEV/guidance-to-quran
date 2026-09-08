@@ -759,20 +759,33 @@
   function initArt() {
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Letter-by-letter hero headline (keeps inner spans like .wavy / .grad-text intact)
+    // Letter-by-letter hero headline. Each word is wrapped in an unbreakable .w span so the
+    // inline-block letters can only wrap at spaces; .grad-text animates as one piece so its
+    // gradient text clipping keeps working. The class is "letters" (not "split", which is the
+    // two-column layout class).
     const h1 = $(".hero h1");
     if (h1 && !reduce) {
       let i = 0;
+      const letter = (ch) => { const s = document.createElement("span"); s.className = "ch"; s.textContent = ch; s.style.animationDelay = `${0.15 + i++ * 0.03}s`; return s; };
       const walk = (node) => {
         [...node.childNodes].forEach((n) => {
           if (n.nodeType === 3) {
             const frag = document.createDocumentFragment();
-            [...n.textContent].forEach((ch) => { if (ch === " ") { frag.appendChild(document.createTextNode(" ")); return; } const s = document.createElement("span"); s.className = "ch"; s.textContent = ch; s.style.animationDelay = `${0.15 + i++ * 0.03}s`; frag.appendChild(s); });
+            n.textContent.split(/(\s+)/).forEach((part) => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); return; }
+              const w = document.createElement("span"); w.className = "w";
+              [...part].forEach((ch) => w.appendChild(letter(ch)));
+              frag.appendChild(w);
+            });
             n.replaceWith(frag);
-          } else if (n.nodeType === 1) walk(n);
+          } else if (n.nodeType === 1) {
+            if (n.classList.contains("grad-text")) { const s = document.createElement("span"); s.className = "ch"; s.style.animationDelay = `${0.15 + i * 0.03}s`; i += 3; n.replaceWith(s); s.appendChild(n); }
+            else walk(n);
+          }
         });
       };
-      walk(h1); h1.classList.add("split");
+      walk(h1); h1.classList.add("letters");
     }
 
     // Lanterns in the hero
