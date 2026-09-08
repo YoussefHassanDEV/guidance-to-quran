@@ -232,6 +232,7 @@
     $("#drawer-close").addEventListener("click", () => open(false));
     $(".backdrop", drawer).addEventListener("click", () => open(false));
     drawer.addEventListener("keydown", (e) => trapTab(e, panel));
+    drawer.addEventListener("click", (e) => { if (e.target.closest("a")) open(false); });
     matchMedia("(min-width: 1025px)").addEventListener("change", (m) => { if (m.matches) open(false); });
 
     // Desktop sub-menu toggle (hover still works for mouse users; this covers touch and keyboard)
@@ -417,11 +418,18 @@
       if (!n) { if (!empty) { empty = document.createElement("div"); empty.className = "empty"; empty.textContent = "No courses match your search. Try another keyword or contact us — we can build a custom plan."; grid.appendChild(empty); } }
       else if (empty) empty.remove();
     };
-    chips.forEach((b) => b.addEventListener("click", () => { chips.forEach((x) => x.classList.remove("active")); b.classList.add("active"); cat = b.dataset.filter; apply(); }));
+    const press = (list, active) => list.forEach((x) => { const on = x === active; x.classList.toggle("active", on); x.setAttribute("aria-pressed", String(on)); });
+    press(chips, chips.find((c) => c.classList.contains("active")));
+    chips.forEach((b) => b.addEventListener("click", () => { press(chips, b); cat = b.dataset.filter; apply(); }));
     if (search) search.addEventListener("input", () => { q = search.value.trim().toLowerCase(); apply(); });
     // Deep link: courses.html#quran selects a category, courses.html#hifz scrolls to a course
-    const h = location.hash.replace("#", "");
-    if (h) { const chip = chips.find((c) => c.dataset.filter === h); if (chip) chip.click(); else { const el = document.getElementById(h); if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200); } }
+    const deepLink = (fromNav) => {
+      const h = location.hash.replace("#", ""); if (!h) return;
+      const chip = chips.find((c) => c.dataset.filter === h);
+      if (chip) { chip.click(); if (fromNav) grid.scrollIntoView({ behavior: "smooth", block: "start" }); }
+      else { const el = document.getElementById(h); if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 200); }
+    };
+    deepLink(false); window.addEventListener("hashchange", () => deepLink(true));
 
     document.addEventListener("click", (e) => { const b = e.target.closest("[data-course]"); if (b) openCourse(b.dataset.course); });
   }
@@ -429,8 +437,8 @@
   let modal;
   function ensureModal() {
     if (modal) return modal;
-    modal = document.createElement("div"); modal.className = "modal"; modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true");
-    modal.innerHTML = `<div class="backdrop"></div><div class="dialog"><div class="head"><button class="close" aria-label="Close">×</button><h2></h2><div class="sub" style="opacity:.9;font-size:.9rem"></div></div><div class="body"></div></div>`;
+    modal = document.createElement("div"); modal.className = "modal"; modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true"); modal.setAttribute("aria-labelledby", "course-title");
+    modal.innerHTML = `<div class="backdrop"></div><div class="dialog"><div class="head"><button class="close" aria-label="Close">×</button><h2 id="course-title"></h2><div class="sub" style="opacity:.9;font-size:.9rem"></div></div><div class="body"></div></div>`;
     modal.querySelector(".backdrop").addEventListener("click", closeModal);
     modal.querySelector(".close").addEventListener("click", closeModal);
     modal.addEventListener("keydown", (e) => trapTab(e, modal.querySelector(".dialog")));
@@ -468,7 +476,9 @@
     const wrap = $("#plans"); if (!wrap) return;
     const tabs = $("#plan-tabs"), cur = $("#currency");
     let cat = PLAN_CATS[0], currency = "usd";
-    if (tabs) tabs.innerHTML = PLAN_CATS.map((c, i) => `<button type="button" class="${i ? "" : "active"}" data-cat="${c.id}">${c.label}</button>`).join("");
+    if (tabs) tabs.innerHTML = PLAN_CATS.map((c, i) => `<button type="button" class="${i ? "" : "active"}" aria-pressed="${i ? "false" : "true"}" data-cat="${c.id}">${c.label}</button>`).join("");
+    const press = (scope, active) => $$("button", scope).forEach((x) => { const on = x === active; x.classList.toggle("active", on); x.setAttribute("aria-pressed", String(on)); });
+    if (cur) press(cur, $("button.active", cur));
     const sym = { usd: "$", gbp: "£" };
     const render = () => {
       wrap.innerHTML = PLANS.map((p) => {
@@ -493,8 +503,8 @@
       }).join("");
       const perClass = $("#per-class"); if (perClass) perClass.textContent = `${sym[currency]}${(Math.round(PLANS[1][currency] * cat.base) / PLANS[1].classes).toFixed(2)}`;
     };
-    if (tabs) tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; $$("button", tabs).forEach((x) => x.classList.remove("active")); b.classList.add("active"); cat = PLAN_CATS.find((c) => c.id === b.dataset.cat); render(); });
-    if (cur) cur.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; $$("button", cur).forEach((x) => x.classList.remove("active")); b.classList.add("active"); currency = b.dataset.cur; render(); });
+    if (tabs) tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; press(tabs, b); cat = PLAN_CATS.find((c) => c.id === b.dataset.cat); render(); });
+    if (cur) cur.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; press(cur, b); currency = b.dataset.cur; render(); });
     render();
   }
 
@@ -815,6 +825,6 @@
     initCourses(); initPricing(); initTestimonials(); initForm();
     initReveal(); initCounters(); initEffects(); initUX(); initArt(); initSparkles();
     // Smooth-scroll for in-page anchors with sticky offset
-    document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const y = t.getBoundingClientRect().top + window.scrollY - 90; window.scrollTo({ top: y, behavior: "smooth" }); } });
+    document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const hdr = $(".header"), y = t.getBoundingClientRect().top + window.scrollY - ((hdr ? hdr.offsetHeight : 74) + 16); window.scrollTo({ top: y, behavior: "smooth" }); } });
   });
 })();
