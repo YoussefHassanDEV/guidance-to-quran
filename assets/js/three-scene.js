@@ -101,7 +101,7 @@
 
     const nebula = new THREE.Mesh(new THREE.PlaneGeometry(60, 34), new THREE.ShaderMaterial({
       transparent: true, depthWrite: false,
-      uniforms: { uTime: { value: 0 }, uDark: { value: 0 }, uA: { value: new THREE.Color(0xf7b733) }, uB: { value: new THREE.Color(0x7dd3fc) }, uC: { value: new THREE.Color(0xff6b9d) } },
+      uniforms: { uTime: { value: 0 }, uDark: { value: 0 }, uA: { value: new THREE.Color(0xe9b93a) }, uB: { value: new THREE.Color(0xf1d9a8) }, uC: { value: new THREE.Color(0xd98a4a) } },
       vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
       fragmentShader: `
         varying vec2 vUv; uniform float uTime; uniform float uDark; uniform vec3 uA; uniform vec3 uB; uniform vec3 uC;
@@ -126,7 +126,7 @@
     const N = mobile ? 1800 : 4200;
     const geo = new THREE.BufferGeometry();
     const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), seed = new Float32Array(N);
-    const palette = [new THREE.Color(0xf7b733), new THREE.Color(0xffd166), new THREE.Color(0x7dd3fc), new THREE.Color(0xff6b9d), new THREE.Color(0xffffff)];
+    const palette = [new THREE.Color(0xe9b93a), new THREE.Color(0xf3d27a), new THREE.Color(0xf1d9a8), new THREE.Color(0xd98a4a), new THREE.Color(0xffffff)];
     for (let i = 0; i < N; i++) {
       pos[i * 3] = rand(-12, 12); pos[i * 3 + 1] = rand(-7, 7); pos[i * 3 + 2] = rand(-3, 3);
       const c = palette[Math.random() < 0.55 ? 0 : Math.floor(rand(0, palette.length))];
@@ -170,7 +170,7 @@
       }
       geo.attributes.position.needsUpdate = true;
       const dark = isDark();
-      if (mat.userData.dark !== dark) { mat.userData.dark = dark; mat.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending; mat.color.set(dark ? 0xffffff : 0x2b4a7a); mat.needsUpdate = true; }
+      if (mat.userData.dark !== dark) { mat.userData.dark = dark; mat.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending; mat.color.set(dark ? 0xffffff : 0x6b4a2e); mat.needsUpdate = true; }
       mat.opacity = dark ? 1 : 0.8; mat.size = baseSize * (dark ? 1 : 1.25) * (1 + 0.15 * Math.sin(t * 1.3));
       mouse.lerp(targetMouse, 0.05);
       group.rotation.y = mouse.x * 0.35 + Math.sin(t * 0.15) * 0.08; group.rotation.x = -mouse.y * 0.25;
@@ -238,7 +238,7 @@
     const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(45, 1, 0.1, 50); camera.position.z = 12;
     const letters = "ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي".split(" ");
     const texFor = (ch, color) => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d"); g.font = "bold 84px Amiri, serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.shadowColor = color; g.shadowBlur = 18; g.fillStyle = color; g.fillText(ch, 64, 70); return new THREE.CanvasTexture(c); };
-    const colors = ["#f7b733", "#7dd3fc", "#ffffff", "#ff6b9d", "#86efac"];
+    const colors = ["#e9b93a", "#f1d9a8", "#ffffff", "#d98a4a", "#f4e7d2"];
     const sprites = [], count = mobile ? 16 : 34;
     for (let i = 0; i < count; i++) {
       const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: texFor(letters[i % letters.length], colors[i % colors.length]), transparent: true, opacity: 0, depthWrite: false }));
@@ -286,24 +286,24 @@
     const sun = new THREE.DirectionalLight(0xffffff, 0.8); sun.position.set(5, 3, 5); scene.add(sun);
     const globe = new THREE.Group(); scene.add(globe);
     const R = 2.4;
-    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R - 0.02, 48, 48), new THREE.MeshPhongMaterial({ color: 0x1c4e9c, transparent: true, opacity: 0.55, shininess: 30 })));
-    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 24, 24), new THREE.MeshBasicMaterial({ color: 0x7dd3fc, wireframe: true, transparent: true, opacity: 0.18 })));
-    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R * 1.12, 48, 48), new THREE.MeshBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.08, side: THREE.BackSide })));
+    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R - 0.02, 48, 48), new THREE.MeshPhongMaterial({ color: 0x5a3612, transparent: true, opacity: 0.55, shininess: 30 })));
+    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R, 24, 24), new THREE.MeshBasicMaterial({ color: 0xf1d9a8, wireframe: true, transparent: true, opacity: 0.18 })));
+    globe.add(new THREE.Mesh(new THREE.SphereGeometry(R * 1.12, 48, 48), new THREE.MeshBasicMaterial({ color: 0xf1d9a8, transparent: true, opacity: 0.08, side: THREE.BackSide })));
     const haloGeo = new THREE.BufferGeometry(), hp = new Float32Array(400 * 3);
     for (let i = 0; i < 400; i++) { const a = rand(0, 6.28), r = R * rand(1.25, 1.6); hp[i * 3] = Math.cos(a) * r; hp[i * 3 + 1] = rand(-0.4, 0.4); hp[i * 3 + 2] = Math.sin(a) * r; }
     haloGeo.setAttribute("position", new THREE.BufferAttribute(hp, 3));
-    const halo = new THREE.Points(haloGeo, new THREE.PointsMaterial({ color: 0xf7b733, size: 0.05, transparent: true, opacity: 0.7, map: glowTexture(), blending: THREE.AdditiveBlending, depthWrite: false }));
+    const halo = new THREE.Points(haloGeo, new THREE.PointsMaterial({ color: 0xe9b93a, size: 0.05, transparent: true, opacity: 0.7, map: glowTexture(), blending: THREE.AdditiveBlending, depthWrite: false }));
     halo.rotation.x = 0.4; scene.add(halo);
     const markers = [];
     const dotGeo = new THREE.SphereGeometry(0.06, 10, 10), ringGeo = new THREE.RingGeometry(0.09, 0.14, 24);
     COUNTRIES.forEach(([name, lat, lon], i) => {
       const p = toVec(lat, lon, R + 0.02);
-      const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: i % 3 ? 0xf7b733 : 0xff6b9d })); dot.position.copy(p); globe.add(dot);
-      const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xf7b733, transparent: true, opacity: 0.6, side: THREE.DoubleSide })); ring.position.copy(p); ring.lookAt(p.clone().multiplyScalar(2)); globe.add(ring);
+      const dot = new THREE.Mesh(dotGeo, new THREE.MeshBasicMaterial({ color: i % 3 ? 0xe9b93a : 0xd98a4a })); dot.position.copy(p); globe.add(dot);
+      const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: 0xe9b93a, transparent: true, opacity: 0.6, side: THREE.DoubleSide })); ring.position.copy(p); ring.lookAt(p.clone().multiplyScalar(2)); globe.add(ring);
       markers.push({ dot, ring, phase: Math.random() * 6.28, name });
       if (i % 2 === 0) { const a = toVec(21.4, 39.8, R), b = p.clone(), mid = a.clone().add(b).multiplyScalar(0.5).normalize().multiplyScalar(R + a.distanceTo(b) * 0.35);
         const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
-        globe.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(40)), new THREE.LineBasicMaterial({ color: 0xf7b733, transparent: true, opacity: 0.35 }))); }
+        globe.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(40)), new THREE.LineBasicMaterial({ color: 0xe9b93a, transparent: true, opacity: 0.35 }))); }
     });
     const makkah = new THREE.Mesh(new THREE.SphereGeometry(0.1, 12, 12), new THREE.MeshBasicMaterial({ color: 0x86efac })); makkah.position.copy(toVec(21.4, 39.8, R + 0.02)); globe.add(makkah);
     let dragging = false, px = 0, py = 0, vx = 0.0035, vy = 0;
@@ -365,7 +365,7 @@
     _geo = { star: extrude(starShape(1, 0.48), 0.35), crescent: extrude(crescentShape(1), 0.3), gem: new THREE.OctahedronGeometry(0.9, 0), heart: extrude(heart, 0.3) };
     return _geo;
   }
-  const PALETTE = { gold: 0xf7b733, orange: 0xf26b2b, sky: 0x7dd3fc, pink: 0xff6b9d, mint: 0x86efac, white: 0xffffff };
+  const PALETTE = { gold: 0xe9b93a, orange: 0xa8601f, sky: 0xf1d9a8, pink: 0xd98a4a, mint: 0x86efac, white: 0xffffff };
 
   /* ------------------------------------------------------------------
      5. Floating 3D motifs: gold stars, crescents, gems and hearts drifting
@@ -452,7 +452,7 @@
     const n = mobile ? 180 : 420, pos = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) { pos[i * 3] = rand(-40, 40); pos[i * 3 + 1] = rand(-14, 14); pos[i * 3 + 2] = rand(-30, 0); }
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    const stars = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTexture(), color: 0xdbe7ff, size: 0.32, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(stars);
+    const stars = new THREE.Points(g, new THREE.PointsMaterial({ map: glowTexture(), color: 0xffe6bf, size: 0.32, transparent: true, opacity: 0.9, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(stars);
     const moon = new THREE.Mesh(motifGeometries().crescent, new THREE.MeshStandardMaterial({ color: PALETTE.gold, emissive: PALETTE.gold, emissiveIntensity: 0.35, metalness: 0.4, roughness: 0.4 }));
     moon.rotation.z = 0.4; scene.add(moon);
     // Keep the moon in an empty corner: top-left on wide screens where the centred container leaves a margin,

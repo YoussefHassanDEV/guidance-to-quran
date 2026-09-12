@@ -6,7 +6,8 @@ A fast, dependency-free rebuild of an online Quran academy website, deployed on 
 
 ## What's better than the original
 - Zero WordPress/Elementor bloat: ~3 files, no jQuery, loads in well under a second
-- Fully responsive with a mobile drawer, sticky glass header and dark mode
+- Warm brown-and-gold design: full-bleed photo hero (Playfair Display + Cairo), stat cards, numbered FAQ, tutor cards with availability, payment strip in the footer
+- Fully responsive with a mobile drawer, a phone bottom tab bar with a raised Enrol button, sticky header and dark mode
 - Interactive courses page with search, category filters and detail modals
 - Fee plans with per-category pricing, USD/GBP toggle, per-class cost and a comparison table
 - Free-trial form with validation, time-zone detection and a no-backend fallback (WhatsApp + email prefill). Optional Formspree endpoint.
@@ -18,7 +19,7 @@ The stylesheet is mobile-first: base rules are written for 320px phones and thre
 
 | Breakpoint | Width | What changes |
 |---|---|---|
-| base | 320px+ | one column, sticky bottom CTA bar, drawer menu, fluid type and gutters |
+| base | 320px+ | one column, bottom tab bar, drawer menu, fluid type and gutters |
 | sm | 641px+ | top bar, two-column grids and form rows, larger header |
 | md | 861px+ | header trial button, desktop hero collage sizes, side-by-side CTA buttons, bottom bar hidden |
 | lg | 1025px+ | desktop navigation with sub-menu, two-column hero / split / CTA / FAQ / globe, 3–5 column grids, 4-column footer |

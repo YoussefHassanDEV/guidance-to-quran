@@ -8,6 +8,7 @@
   const SITE = {
     name: "Hedaya Academy",
     tagline: "Online Quran Academy",
+    motto: "Where the Quran meets your family's journey",
     phoneDisplay: "+1 (202) 555-0148",
     phoneIntl: "12025550148",           // digits only, used for WhatsApp / tel:
     email: "hello@hedayaacademy.example",
@@ -46,7 +47,11 @@
     li: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.9 21H3.2V8.7h3.7zM5 7A2.1 2.1 0 1 1 5 2.8 2.1 2.1 0 0 1 5 7zm16 14h-3.7v-6c0-1.4 0-3.3-2-3.3s-2.3 1.6-2.3 3.2V21H9.4V8.7h3.5v1.7h.1a3.9 3.9 0 0 1 3.5-1.9c3.7 0 4.4 2.5 4.4 5.6z"/></svg>',
     x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 2h3.4l-7.4 8.5L23 22h-6.8l-5.3-7-6.1 7H1.4l7.9-9.1L1 2h7l4.8 6.4zm-1.2 18h1.9L7.1 3.9H5.1z"/></svg>',
     tt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3c.3 2.4 1.7 3.9 4 4.1v3.3c-1.5 0-2.9-.5-4-1.3v6.4a5.7 5.7 0 1 1-4.9-5.7v3.4a2.4 2.4 0 1 0 1.6 2.3V3z"/></svg>',
-    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>'
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>',
+    home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z"/></svg>',
+    grad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',
+    tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>',
+    chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.7-.8L3 21l1.9-5.3A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>'
   };
 
   const CURRENT = (document.body.dataset.page || "home").toLowerCase();
@@ -195,8 +200,8 @@
         <ul>
           <li><a href="tel:+${SITE.phoneIntl}">${ICONS.phone} ${SITE.phoneDisplay}</a></li>
           <li><a href="mailto:${SITE.email}">${ICONS.mail} ${SITE.email}</a></li>
-          <li><span style="opacity:.85">${ICONS.clock} Classes 24/7 · all time zones</span></li>
         </ul>
+        <span class="tagline">${SITE.motto}</span>
         <div class="socials">${socials()}</div>
       </div></div>
       <div class="header" id="hdr"><div class="container">
@@ -204,7 +209,7 @@
         <nav class="nav" aria-label="Primary"><ul>${navList(false)}</ul></nav>
         <div class="header-actions">
           <button class="icon-btn theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">${ICONS.sun}${ICONS.moon}</button>
-          <a class="btn btn-accent btn-sm" href="free-trial.html">Book Free Trial</a>
+          <a class="btn btn-accent btn-sm" href="free-trial.html">Book Now</a>
           <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="drawer">${ICONS.menu}</button>
         </div>
       </div></div>
@@ -265,7 +270,7 @@
       } else if (!reduce) {
         // Fallback: expanding coloured circle overlay, then swap theme
         const ov = document.createElement("div"); ov.className = "theme-ripple";
-        ov.style.cssText = `left:${x}px;top:${y}px;background:${next === "dark" ? "#0d1420" : "#ffffff"}`;
+        ov.style.cssText = `left:${x}px;top:${y}px;background:${next === "dark" ? "#170f09" : "#fffdf9"}`;
         document.body.appendChild(ov);
         requestAnimationFrame(() => { ov.style.transform = `translate(-50%,-50%) scale(${radius / 10})`; });
         setTimeout(apply, 380);
@@ -325,6 +330,10 @@
           <span>${SITE.legal.ein}</span>
           <span>${SITE.legal.address}</span>
         </div>
+        <div class="accept">
+          <strong>We accept</strong>
+          <div><i>VISA</i><i>Mastercard</i><i>PayPal</i><i>Bank transfer</i></div>
+        </div>
         <div class="bottom">
           <div>© ${y} ${SITE.name}. All rights reserved.</div>
           <ul><li><a href="about.html#faq">Privacy</a></li><li><a href="about.html#faq">Refund policy</a></li><li><a href="about.html#faq">Disclaimer</a></li></ul>
@@ -351,7 +360,7 @@
     const c = document.createElement("canvas"); c.className = "sparkle-layer"; document.body.appendChild(c);
     const g = c.getContext("2d"); let W, H; const dpr = Math.min(devicePixelRatio || 1, 2);
     const size = () => { W = c.width = innerWidth * dpr; H = c.height = innerHeight * dpr; }; size(); addEventListener("resize", size);
-    const parts = [], colors = ["#f7b733", "#ffd166", "#7dd3fc", "#ffffff", "#ff6b9d"]; let last = 0;
+    const parts = [], colors = ["#e9b93a", "#f3d27a", "#f1d9a8", "#ffffff", "#d98a4a"]; let last = 0;
     addEventListener("pointermove", (e) => { const now = performance.now(); if (now - last < 28) return; last = now;
       for (let i = 0; i < 2; i++) parts.push({ x: e.clientX * dpr, y: e.clientY * dpr, vx: (Math.random() - .5) * 1.4, vy: -Math.random() * 1.2 - .3, life: 1, r: (Math.random() * 3 + 2) * dpr, c: colors[(Math.random() * colors.length) | 0], rot: Math.random() * 6.28 }); }, { passive: true });
     const star = (x, y, r, rot) => { g.beginPath(); for (let i = 0; i < 8; i++) { const rr = i % 2 ? r * .4 : r, a = rot + i * Math.PI / 4; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } g.closePath(); g.fill(); };
@@ -744,12 +753,15 @@
       track.addEventListener("scroll", () => { const w = items[0].getBoundingClientRect().width + 24, i = Math.round(track.scrollLeft / w); [...dots.children].forEach((d, j) => d.classList.toggle("active", j === i)); }, { passive: true });
     }
 
-    // Mobile sticky CTA
+    // Phone bottom tab bar (hidden from md up, where the header has the full navigation)
     if (CURRENT !== "trial") {
-      const bar = document.createElement("div"); bar.className = "mobile-cta";
-      bar.innerHTML = `<a class="btn btn-whatsapp" href="${waLink("Assalamu alaikum! I'd like to book a free trial class.")}" target="_blank" rel="noopener">${ICONS.whatsapp} WhatsApp</a><a class="btn btn-accent" href="free-trial.html">🎉 Free trial</a>`;
-      document.body.appendChild(bar);
-      window.addEventListener("scroll", () => bar.classList.toggle("show", window.scrollY > 350), { passive: true });
+      const nav = document.createElement("nav"); nav.className = "mobile-nav"; nav.setAttribute("aria-label", "Quick navigation");
+      const item = (href, page, icon, label, extra = "") => `<a href="${href}" class="${page === CURRENT ? "active" : ""}"${extra}>${icon}<span>${label}</span></a>`;
+      nav.innerHTML = item("index.html", "home", ICONS.home, "Home") + item("courses.html", "courses", ICONS.book, "Courses")
+        + `<a href="free-trial.html" class="enrol"><span class="bubble">${ICONS.grad}</span><span>Enrol</span></a>`
+        + item("fee-plans.html", "fees", ICONS.tag, "Plans")
+        + item(waLink("Assalamu alaikum! I'd like to book a free trial class."), "", ICONS.chat, "Contact", ' target="_blank" rel="noopener"');
+      document.body.appendChild(nav);
     }
   }
 
@@ -799,7 +811,7 @@
         const now = performance.now(); if (now - last < 70) return; last = now;
         const s = document.createElement("span"); s.className = "spark"; s.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
         s.style.left = e.clientX + (Math.random() * 16 - 8) + "px"; s.style.top = e.clientY + (Math.random() * 16 - 8) + "px";
-        s.style.color = ["#f7b733", "#ff6b9d", "#7dd3fc", "#fff"][Math.floor(Math.random() * 4)];
+        s.style.color = ["#e9b93a", "#d98a4a", "#f1d9a8", "#fff"][Math.floor(Math.random() * 4)];
         document.body.appendChild(s); setTimeout(() => s.remove(), 900);
       }, { passive: true });
     }
