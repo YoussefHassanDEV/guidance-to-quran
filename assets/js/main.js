@@ -56,10 +56,9 @@
     qaida: "photo-1609599006353-e629aaabfeae", nazra: "photo-1542816417-0983c9c9ad53", tajweed: "photo-1576764402988-7143f9cca90a",
     hifz: "photo-1589462135796-2b46e4bdd7fe", tafseer: "photo-1580220810949-e7ddee6a4954", translation: "photo-1575645513913-c002ea3b2e01",
     scholar: "photo-1590075865003-e48277faa558", seerah: "photo-1600814832809-579119f47045", arabic: "photo-1596125160970-6f02eeba00d3",
-    urdu: "photo-1712249239167-18cb9e056ee6", english: "photo-1758612898312-708f2ffdcd53", duas: "photo-1574246604907-db69e30ddb97",
-    tutoring: "photo-1623076189461-f7706b741c04", ramadan: "photo-1592326871020-04f58c1a52f3"
+    duas: "photo-1574246604907-db69e30ddb97"
   };
-  const EMOJI = { qaida: "🔤", nazra: "📖", tajweed: "🎙️", hifz: "🧠", tafseer: "💡", translation: "🌍", scholar: "🎓", seerah: "🕌", arabic: "✍️", urdu: "🗣️", english: "🇬🇧", duas: "🤲", tutoring: "🧮", ramadan: "🌙" };
+  const EMOJI = { qaida: "🔤", nazra: "📖", tajweed: "🎙️", hifz: "🧠", tafseer: "💡", translation: "🌍", scholar: "🎓", seerah: "🕌", arabic: "✍️", duas: "🤲" };
   /* Cartoon avatars (DiceBear, free) */
   const avatar = (seed, style = "adventurer") => `https://api.dicebear.com/9.x/${style}/svg?seed=${encodeURIComponent(seed)}&backgroundColor=ffdfbf,c0aede,b6e3f4,d1d4f9,ffd5dc&radius=50`;
   window.GTQ = { photo, PHOTOS, avatar };
@@ -110,21 +109,9 @@
     { id: "arabic", title: "Arabic Language", cat: "language", level: "Beginner–Advanced", age: "8+", weeks: "6–18 months", theme: "t-blue", ar: "ع",
       blurb: "Modern Standard and Quranic Arabic: reading, writing, grammar (nahw & sarf) and conversation with native-speaking teachers.",
       outcomes: ["Hold everyday conversations in Arabic", "Read and understand Quranic Arabic", "Master essential grammar"] },
-    { id: "urdu", title: "Urdu Language", cat: "language", level: "Beginner–Intermediate", age: "6+", weeks: "6–12 months", theme: "t-teal", ar: "ا",
-      blurb: "Learn to read, write and speak Urdu with a friendly tutor. Perfect for diaspora families who want children to keep their language.",
-      outcomes: ["Read and write the Urdu script", "Converse confidently with family", "Read simple Urdu books and poetry"] },
-    { id: "english", title: "English Language", cat: "language", level: "Beginner–Intermediate", age: "6+", weeks: "6–12 months", theme: "t-purple", ar: "E",
-      blurb: "Spoken English, grammar and writing for students and professionals, with structured lessons and practice sessions.",
-      outcomes: ["Speak clearly and confidently", "Write correct, natural English", "Prepare for school or work"] },
     { id: "duas", title: "Daily Duas & Salah", cat: "short", level: "Beginner", age: "4+", weeks: "6–8 weeks", theme: "t-orange", ar: "د",
       blurb: "A short course for children and reverts: learn wudu, salah step by step, and the essential daily supplications with meaning.",
-      outcomes: ["Pray salah correctly and confidently", "Memorise 40 essential duas", "Understand the meaning of what you say"] },
-    { id: "tutoring", title: "School Subjects Tutoring", cat: "short", level: "Grades 1–12", age: "6+", weeks: "Flexible", theme: "t-green", ar: "+",
-      blurb: "Maths, Science and English tutoring aligned with your school curriculum, delivered by experienced subject teachers.",
-      outcomes: ["Improve grades with personalised support", "Homework and exam preparation help", "Progress feedback to parents"] },
-    { id: "ramadan", title: "Ramadan Intensive", cat: "short", level: "All levels", age: "8+", weeks: "4 weeks", theme: "t-navy", ar: "ر",
-      blurb: "A seasonal programme to complete or revise a portion of the Quran, learn the fiqh of fasting and prepare for Laylatul Qadr.",
-      outcomes: ["Daily tilawah with a teacher", "Fiqh of fasting, zakah and Eid", "Special dua and dhikr sessions"] }
+      outcomes: ["Pray salah correctly and confidently", "Memorise 40 essential duas", "Understand the meaning of what you say"] }
   ];
 
   /* Real pricing (owner, 2026-09-12). One-hour live classes; custom programmes on request. */
@@ -168,7 +155,7 @@
     { href: "courses.html", label: "Courses", key: "courses", sub: [
       { href: "courses.html#quran", label: "Quran Courses" },
       { href: "courses.html#islamic", label: "Islamic Studies" },
-      { href: "courses.html#language", label: "Language Courses" },
+      { href: "courses.html#language", label: "Arabic Language" },
       { href: "courses.html#short", label: "Short Courses" }
     ] },
     { href: "fee-plans.html", label: "Fee Plans", key: "fees" },
