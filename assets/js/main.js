@@ -85,63 +85,53 @@
   const COURSES = [
     { id: "qaida", title: "Noorani Qaida", cat: "quran", level: "Beginner", age: "4+", weeks: "3–6 months", theme: "t-blue", ar: "ق",
       blurb: "The foundation of Quran reading. Learn the Arabic alphabet, harakat, sukoon, tanween and joining letters with correct pronunciation.",
-      outcomes: ["Recognise and pronounce every Arabic letter from its correct makhraj", "Read joined words and short ayahs fluently", "Build the base for Tajweed and Nazra"], from: 25 },
+      outcomes: ["Recognise and pronounce every Arabic letter from its correct makhraj", "Read joined words and short ayahs fluently", "Build the base for Tajweed and Nazra"] },
     { id: "nazra", title: "Quran Reading (Nazra)", cat: "quran", level: "Beginner–Intermediate", age: "5+", weeks: "6–12 months", theme: "t-teal", ar: "ن",
       blurb: "Move from Qaida to reading the full Mushaf accurately, at a comfortable pace, with a dedicated one-to-one teacher.",
-      outcomes: ["Read any page of the Quran without assistance", "Apply basic Tajweed rules while reading", "Complete a full khatm with your teacher"], from: 25 },
+      outcomes: ["Read any page of the Quran without assistance", "Apply basic Tajweed rules while reading", "Complete a full khatm with your teacher"] },
     { id: "tajweed", title: "Quran Reading with Tajweed", cat: "quran", level: "Intermediate", age: "7+", weeks: "6–12 months", theme: "t-orange", ar: "ت",
       blurb: "Perfect your recitation. Study the rules of noon sakinah, meem sakinah, madd, qalqalah and the articulation points in depth.",
-      outcomes: ["Recite with the precision of a trained Qari", "Understand and name every Tajweed rule you apply", "Ijazah preparation track available"], from: 25 },
+      outcomes: ["Recite with the precision of a trained Qari", "Understand and name every Tajweed rule you apply", "Ijazah preparation track available"] },
     { id: "hifz", title: "Quran Memorization (Hifz)", cat: "quran", level: "All levels", age: "6+", weeks: "2–4 years", theme: "t-navy", ar: "ح",
       blurb: "A structured memorisation programme with daily sabaq, sabqi and manzil revision, progress tracking and parent reports.",
-      outcomes: ["Memorise selected surahs or the complete Quran", "Retain what you memorise with a proven revision cycle", "Monthly written progress reports"], from: 35 },
+      outcomes: ["Memorise selected surahs or the complete Quran", "Retain what you memorise with a proven revision cycle", "Monthly written progress reports"] },
     { id: "tafseer", title: "Tafseer ul Quran", cat: "islamic", level: "Intermediate–Advanced", age: "12+", weeks: "12+ months", theme: "t-purple", ar: "ف",
       blurb: "Understand the meaning, context and lessons of the Quran surah by surah, drawing on classical tafseer works.",
-      outcomes: ["Grasp the themes and message of each surah", "Learn the reasons of revelation and key rulings", "Reflect and apply the Quran in daily life"], from: 30 },
+      outcomes: ["Grasp the themes and message of each surah", "Learn the reasons of revelation and key rulings", "Reflect and apply the Quran in daily life"] },
     { id: "translation", title: "Quran Translation", cat: "islamic", level: "All levels", age: "10+", weeks: "12 months", theme: "t-green", ar: "ر",
       blurb: "Word-by-word translation of the Quran so you understand what you recite in salah and daily tilawah.",
-      outcomes: ["Understand the vocabulary of the Quran", "Follow the meaning during recitation", "Strengthen your connection in salah"], from: 30 },
+      outcomes: ["Understand the vocabulary of the Quran", "Follow the meaning during recitation", "Strengthen your connection in salah"] },
     { id: "scholar", title: "Islamic Scholar Course", cat: "islamic", level: "Advanced", age: "15+", weeks: "3 years", theme: "t-amber", ar: "ع",
       blurb: "A multi-year 'Alim/'Alimah track covering Aqeedah, Fiqh, Hadith, Seerah, Arabic grammar and Usool, taught by qualified Muftis.",
-      outcomes: ["Solid grounding in the core Islamic sciences", "Ability to read classical Arabic texts", "Certificate on completion"], from: 40 },
+      outcomes: ["Solid grounding in the core Islamic sciences", "Ability to read classical Arabic texts", "Certificate on completion"] },
     { id: "seerah", title: "Seerat un Nabi ﷺ", cat: "islamic", level: "All levels", age: "8+", weeks: "6 months", theme: "t-rose", ar: "س",
       blurb: "Walk through the life of the Prophet Muhammad ﷺ from birth to the Farewell Pilgrimage, with lessons for today.",
-      outcomes: ["Know the key events and people of the Seerah", "Learn the Prophet's character and manners", "Family-friendly, story-based lessons"], from: 25 },
+      outcomes: ["Know the key events and people of the Seerah", "Learn the Prophet's character and manners", "Family-friendly, story-based lessons"] },
     { id: "arabic", title: "Arabic Language", cat: "language", level: "Beginner–Advanced", age: "8+", weeks: "6–18 months", theme: "t-blue", ar: "ع",
       blurb: "Modern Standard and Quranic Arabic: reading, writing, grammar (nahw & sarf) and conversation with native-speaking teachers.",
-      outcomes: ["Hold everyday conversations in Arabic", "Read and understand Quranic Arabic", "Master essential grammar"], from: 30 },
+      outcomes: ["Hold everyday conversations in Arabic", "Read and understand Quranic Arabic", "Master essential grammar"] },
     { id: "urdu", title: "Urdu Language", cat: "language", level: "Beginner–Intermediate", age: "6+", weeks: "6–12 months", theme: "t-teal", ar: "ا",
       blurb: "Learn to read, write and speak Urdu with a friendly tutor. Perfect for diaspora families who want children to keep their language.",
-      outcomes: ["Read and write the Urdu script", "Converse confidently with family", "Read simple Urdu books and poetry"], from: 25 },
+      outcomes: ["Read and write the Urdu script", "Converse confidently with family", "Read simple Urdu books and poetry"] },
     { id: "english", title: "English Language", cat: "language", level: "Beginner–Intermediate", age: "6+", weeks: "6–12 months", theme: "t-purple", ar: "E",
       blurb: "Spoken English, grammar and writing for students and professionals, with structured lessons and practice sessions.",
-      outcomes: ["Speak clearly and confidently", "Write correct, natural English", "Prepare for school or work"], from: 25 },
+      outcomes: ["Speak clearly and confidently", "Write correct, natural English", "Prepare for school or work"] },
     { id: "duas", title: "Daily Duas & Salah", cat: "short", level: "Beginner", age: "4+", weeks: "6–8 weeks", theme: "t-orange", ar: "د",
       blurb: "A short course for children and reverts: learn wudu, salah step by step, and the essential daily supplications with meaning.",
-      outcomes: ["Pray salah correctly and confidently", "Memorise 40 essential duas", "Understand the meaning of what you say"], from: 20 },
+      outcomes: ["Pray salah correctly and confidently", "Memorise 40 essential duas", "Understand the meaning of what you say"] },
     { id: "tutoring", title: "School Subjects Tutoring", cat: "short", level: "Grades 1–12", age: "6+", weeks: "Flexible", theme: "t-green", ar: "+",
       blurb: "Maths, Science and English tutoring aligned with your school curriculum, delivered by experienced subject teachers.",
-      outcomes: ["Improve grades with personalised support", "Homework and exam preparation help", "Progress feedback to parents"], from: 30 },
+      outcomes: ["Improve grades with personalised support", "Homework and exam preparation help", "Progress feedback to parents"] },
     { id: "ramadan", title: "Ramadan Intensive", cat: "short", level: "All levels", age: "8+", weeks: "4 weeks", theme: "t-navy", ar: "ر",
       blurb: "A seasonal programme to complete or revise a portion of the Quran, learn the fiqh of fasting and prepare for Laylatul Qadr.",
-      outcomes: ["Daily tilawah with a teacher", "Fiqh of fasting, zakah and Eid", "Special dua and dhikr sessions"], from: 20 }
+      outcomes: ["Daily tilawah with a teacher", "Fiqh of fasting, zakah and Eid", "Special dua and dhikr sessions"] }
   ];
 
-  const PLAN_CATS = [
-    { id: "qaida", label: "Qaida & Quran Reading with Tajweed", base: 1 },
-    { id: "hifz", label: "Quran Memorization", base: 1.4 },
-    { id: "tafseer", label: "Tafseer & Translation", base: 1.2 },
-    { id: "short", label: "Short Courses", base: 0.8 },
-    { id: "tutoring", label: "School Subjects Tutoring", base: 1.2 },
-    { id: "language", label: "Arabic / English / Urdu", base: 1.2 },
-    { id: "scholar", label: "Islamic Scholar Course", base: 1.6 }
-  ];
+  /* Real pricing (owner, 2026-09-12). One-hour live classes; custom programmes on request. */
   const PLANS = [
-    { id: "a", name: "Plan A", days: 2, usd: 25, gbp: 20, classes: 8 },
-    { id: "b", name: "Plan B", days: 3, usd: 35, gbp: 28, classes: 12, featured: true },
-    { id: "c", name: "Plan C", days: 4, usd: 40, gbp: 32, classes: 16 },
-    { id: "d", name: "Plan D", days: 5, usd: 50, gbp: 40, classes: 20 },
-    { id: "w", name: "Weekend", days: "Sat & Sun", usd: 40, gbp: 32, classes: 8 }
+    { id: "starter", name: "Starter", usd: 40, term: "per month", classes: 4, perMonth: 4, months: 1, blurb: "Four one-hour classes a month, one a week." },
+    { id: "regular", name: "Regular", usd: 75, term: "per month", classes: 8, perMonth: 8, months: 1, featured: true, blurb: "Eight one-hour classes a month, two a week." },
+    { id: "bundle", name: "3-Month Bundle", usd: 100, term: "for 3 months", classes: 12, perMonth: 4, months: 3, blurb: "Four one-hour classes a month, paid once for three months." }
   ];
 
   /* ------------------------------------------------------------------
@@ -411,7 +401,7 @@
       <div class="body">
         <div class="meta"><span>${ICONS.users} Ages ${c.age}</span><span>${ICONS.clock} ${c.weeks}</span><span>${ICONS.book} 1-to-1 live</span></div>
         <p class="muted" style="font-size:.93rem">${esc(c.blurb)}</p>
-        <div class="foot"><span class="price">from $${c.from}<small>/mo</small></span><button class="btn btn-primary btn-sm" data-course="${c.id}">Details</button></div>
+        <div class="foot"><span class="price">1-hour live classes</span><button class="btn btn-primary btn-sm" data-course="${c.id}">Details</button></div>
       </div>
     </article>`;
   }
@@ -487,38 +477,34 @@
   ------------------------------------------------------------------ */
   function initPricing() {
     const wrap = $("#plans"); if (!wrap) return;
-    const tabs = $("#plan-tabs"), cur = $("#currency");
-    let cat = PLAN_CATS[0], currency = "usd";
-    if (tabs) tabs.innerHTML = PLAN_CATS.map((c, i) => `<button type="button" class="${i ? "" : "active"}" aria-pressed="${i ? "false" : "true"}" data-cat="${c.id}">${c.label}</button>`).join("");
-    const press = (scope, active) => $$("button", scope).forEach((x) => { const on = x === active; x.classList.toggle("active", on); x.setAttribute("aria-pressed", String(on)); });
-    if (cur) press(cur, $("button.active", cur));
-    const sym = { usd: "$", gbp: "£" };
-    const render = () => {
-      wrap.innerHTML = PLANS.map((p) => {
-        const price = Math.round(p[currency] * cat.base);
-        const dayTxt = typeof p.days === "number" ? `${p.days} days a week` : `${p.days} (weekend only)`;
-        return `<div class="card plan ${p.featured ? "featured" : ""}">
-          ${p.featured ? '<span class="ribbon">Most popular</span>' : ""}
-          <h3>${p.name}</h3>
-          <div class="amount"><sup>${sym[currency]}</sup>${price}</div>
-          <div class="per">per month · ${cat.label}</div>
-          <ul>
-            <li>${ICONS.check}<span>${dayTxt}</span></li>
-            <li>${ICONS.check}<span>30-minute live class</span></li>
-            <li>${ICONS.check}<span>${p.classes} classes per month</span></li>
-            <li>${ICONS.check}<span>Monthly progress report</span></li>
-            <li>${ICONS.check}<span>Male or female teacher</span></li>
-            ${p.featured ? `<li>${ICONS.check}<span>Free make-up classes</span></li>` : ""}
-          </ul>
-          <a class="btn ${p.featured ? "btn-light" : "btn-primary"}" href="free-trial.html?plan=${p.id}">Start free trial</a>
-          <div class="note">Cancel anytime · first month ${sym[currency]}${currency === "usd" ? 20 : 16} for new students</div>
-        </div>`;
-      }).join("");
-      const perClass = $("#per-class"); if (perClass) perClass.textContent = `${sym[currency]}${(Math.round(PLANS[1][currency] * cat.base) / PLANS[1].classes).toFixed(2)}`;
-    };
-    if (tabs) tabs.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; press(tabs, b); cat = PLAN_CATS.find((c) => c.id === b.dataset.cat); render(); });
-    if (cur) cur.addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; press(cur, b); currency = b.dataset.cur; render(); });
-    render();
+    const custom = `<div class="card plan custom">
+      <h3>Custom programme</h3>
+      <div class="amount"><span class="txt">Tailored</span></div>
+      <div class="per">based on your availability</div>
+      <p class="muted" style="font-size:.93rem">Need a different number of classes, intensive Hifz, a family package or a special schedule? Tell us your availability and goals and we will build a programme and price around you.</p>
+      <ul>
+        <li>${ICONS.check}<span>Any number of classes per week</span></li>
+        <li>${ICONS.check}<span>One-hour live classes, your time zone</span></li>
+        <li>${ICONS.check}<span>Dedicated teacher, male or female</span></li>
+      </ul>
+      <a class="btn btn-whatsapp" href="${waLink("Assalamu alaikum! I'd like a custom programme. My availability is: ")}" target="_blank" rel="noopener">${ICONS.whatsapp} Ask on WhatsApp</a>
+    </div>`;
+    wrap.innerHTML = PLANS.map((p) => `<div class="card plan ${p.featured ? "featured" : ""}">
+        ${p.featured ? '<span class="ribbon">Most popular</span>' : ""}
+        <h3>${p.name}</h3>
+        <div class="amount"><sup>$</sup>${p.usd}</div>
+        <div class="per">${p.term}</div>
+        <p class="muted" style="font-size:.93rem">${p.blurb}</p>
+        <ul>
+          <li>${ICONS.check}<span>${p.classes} live classes${p.months > 1 ? ` (${p.perMonth} a month)` : ""}</span></li>
+          <li>${ICONS.check}<span>One hour each, one-to-one</span></li>
+          <li>${ICONS.check}<span>Dedicated teacher, male or female</span></li>
+          <li>${ICONS.check}<span>Monthly progress report</span></li>
+          ${p.featured ? `<li>${ICONS.check}<span>Free make-up classes</span></li>` : ""}
+        </ul>
+        <a class="btn ${p.featured ? "btn-light" : "btn-primary"}" href="free-trial.html?plan=${p.id}">Start free trial</a>
+        <div class="note">About $${(p.usd / p.classes).toFixed(2)} per class · cancel anytime</div>
+      </div>`).join("") + custom;
   }
 
   /* ------------------------------------------------------------------

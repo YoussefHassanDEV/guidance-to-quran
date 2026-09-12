@@ -612,6 +612,9 @@ ul.checks svg, .checks li > svg { width: 20px; height: 20px; flex: none; color: 
 .plan .ribbon { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--gold); color: #3a2206; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: .3rem .9rem; border-radius: 999px; white-space: nowrap; }
 .plan h3 { font-size: 1.15rem; }
 .plan .amount { font-family: var(--font-head); font-size: 2.2rem; font-weight: 700; line-height: 1; margin: .6rem 0 .2rem; }
+.plan .amount .txt { font-size: 1.6rem; }
+.plan.custom { border-style: dashed; border-color: var(--orange); background: var(--gold-light); }
+.plan.custom .per { background: var(--card); }
 .plan .amount sup { font-size: 1.1rem; vertical-align: top; margin-right: .1rem; }
 .plan .per { display: inline-block; color: var(--ink-2); background: var(--cream); border-radius: 999px; padding: .3rem .9rem; font-size: .85rem; font-weight: 600; margin-bottom: 1.4rem; }
 .plan.featured .per { background: rgba(255,255,255,.14); color: #fff; }
