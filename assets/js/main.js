@@ -16,7 +16,7 @@
     // Leave empty to fall back to WhatsApp + mailto (works on GitHub Pages with no backend).
     formEndpoint: "",
     socials: {
-      facebook: "#", instagram: "#", youtube: "#", linkedin: "#", x: "#", tiktok: "#"
+      facebook: "", instagram: "https://www.instagram.com/hedaya__academy/", youtube: "", linkedin: "", x: "", tiktok: ""
     },
     // Legal entity shown in the footer. Replace the placeholders with the real registration details.
     legal: {
@@ -188,8 +188,9 @@
   }
 
   function socials() {
-    const s = SITE.socials;
-    return `<a href="${s.facebook}" aria-label="Facebook">${ICONS.fb}</a><a href="${s.instagram}" aria-label="Instagram">${ICONS.ig}</a><a href="${s.youtube}" aria-label="YouTube">${ICONS.yt}</a><a href="${s.linkedin}" aria-label="LinkedIn">${ICONS.li}</a><a href="${s.x}" aria-label="X">${ICONS.x}</a><a href="${s.tiktok}" aria-label="TikTok">${ICONS.tt}</a>`;
+    // Only networks with a real URL are rendered; empty entries in SITE.socials are skipped.
+    const s = SITE.socials, list = [["facebook", "Facebook", ICONS.fb], ["instagram", "Instagram", ICONS.ig], ["youtube", "YouTube", ICONS.yt], ["linkedin", "LinkedIn", ICONS.li], ["x", "X", ICONS.x], ["tiktok", "TikTok", ICONS.tt]];
+    return list.filter(([k]) => s[k] && s[k] !== "#").map(([k, label, icon]) => `<a href="${s[k]}" aria-label="${label}" target="_blank" rel="noopener">${icon}</a>`).join("");
   }
 
   function renderHeader() {
