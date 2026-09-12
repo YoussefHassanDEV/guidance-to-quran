@@ -19,13 +19,6 @@
     socials: {
       facebook: "", instagram: "https://www.instagram.com/hedaya__academy/", youtube: "", linkedin: "", x: "", tiktok: ""
     },
-    // Legal entity shown in the footer. Replace the placeholders with the real registration details.
-    legal: {
-      entity: "Hedaya Academy LLC",
-      registration: "Registered in Wyoming, USA",
-      ein: "EIN 00-0000000",
-      address: "30 N Gould St, Sheridan, WY 82801, USA"
-    }
   };
 
   const ICONS = {
@@ -340,12 +333,6 @@
             <h4 style="margin-top:1.4rem">Newsletter</h4>
             <form class="newsletter" id="newsletter"><input type="email" placeholder="Your email" aria-label="Email" required><button class="btn btn-accent btn-sm" type="submit">Join</button></form>
           </div>
-        </div>
-        <div class="legal">
-          <strong>${SITE.legal.entity}</strong>
-          <span>${SITE.legal.registration}</span>
-          <span>${SITE.legal.ein}</span>
-          <span>${SITE.legal.address}</span>
         </div>
         <div class="accept">
           <strong>We accept</strong>
