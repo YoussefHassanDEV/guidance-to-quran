@@ -9,8 +9,8 @@
     name: "Hedaya Academy",
     tagline: "Online Quran Academy",
     motto: "Where the Quran meets your family's journey",
-    phoneDisplay: "+1 (202) 555-0148",
-    phoneIntl: "12025550148",           // digits only, used for WhatsApp / tel:
+    phoneDisplay: "+20 11 5784 3587",
+    phoneIntl: "201157843587",           // digits only, used for WhatsApp / tel:
     email: "hello@hedayaacademy.example",
     // Optional: paste a Formspree / Getform endpoint to receive form submissions by email.
     // Leave empty to fall back to WhatsApp + mailto (works on GitHub Pages with no backend).
