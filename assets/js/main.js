@@ -10,8 +10,8 @@
     tagline: "Online Quran Academy",
     motto: "Where the Quran meets your family's journey",
     instagram: "hedaya__academy",       // public handle, used by the Instagram section
-    phoneDisplay: "+20 11 5784 3587",
-    phoneIntl: "201157843587",           // digits only, used for WhatsApp / tel:
+    phoneDisplay: "+20 110 035 9558",
+    phoneIntl: "201100359558",           // digits only, used for WhatsApp / tel:
     email: "hello@hedayaacademy.example",
     // Optional: paste a Formspree / Getform endpoint to receive form submissions by email.
     // Leave empty to fall back to WhatsApp + mailto (works on GitHub Pages with no backend).
