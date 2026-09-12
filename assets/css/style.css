@@ -513,6 +513,26 @@ ul.checks svg, .checks li > svg { width: 20px; height: 20px; flex: none; color: 
 .testi-dots button.active { width: 40px; }
 .testi-dots button.active::before { width: 24px; border-radius: 6px; background: var(--orange-dark); }
 
+/* Instagram section */
+.ig-section { background: var(--bg); }
+.ig-embeds { display: grid; grid-template-columns: 1fr; gap: 1.5rem; justify-items: center; margin-bottom: 1.5rem; }
+.ig-embeds:empty { display: none; }
+.ig-embed { width: 100%; max-width: 540px; }
+.ig-embed .instagram-media { margin: 0 auto !important; width: 100% !important; min-width: 0 !important; max-width: 540px !important; border-radius: 22px !important; border: 1px solid var(--line) !important; box-shadow: var(--shadow) !important; background: var(--card) !important; }
+.ig-embed blockquote:not(.instagram-media-rendered) { padding: 1.2rem; }
+.ig-embed blockquote:not(.instagram-media-rendered) a { color: var(--ink-2); font-style: italic; }
+.ig-card { display: flex; flex-direction: column; gap: .8rem; color: var(--ink); text-decoration: none !important; }
+.ig-card .ig-head { display: flex; align-items: center; gap: .7rem; }
+.ig-card .ig-head span:last-child { display: grid; line-height: 1.25; }
+.ig-card .ig-head strong { font-size: .92rem; }
+.ig-card .ig-head small { color: var(--ink-3); font-size: .76rem; }
+.ig-card .ig-logo { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: linear-gradient(45deg, #f9ce34, #ee2a7b, #6228d7); color: #fff; flex: none; }
+.ig-card .ig-logo svg { width: 20px; height: 20px; }
+.ig-card p { flex: 1; font-size: .93rem; margin: 0; }
+.ig-card .ig-more { display: inline-flex; align-items: center; gap: .3rem; font-weight: 700; font-size: .85rem; color: var(--orange-dark); }
+.ig-card .ig-more svg { width: 16px; height: 16px; transition: transform .2s; }
+.ig-card:hover .ig-more svg { transform: translateX(3px); }
+
 /* --------------------------------------------------------------------------
    8. Page sections
    -------------------------------------------------------------------------- */
@@ -851,6 +871,7 @@ body:not(:has(.mobile-cta, .mobile-nav)) .float-wa, body:not(:has(.mobile-cta, .
   .brand small { display: block; }
   .header-actions { gap: .6rem; }
   .grid-2, .grid-3, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ig-embeds { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .grid-5 > :last-child { grid-column: auto; }
   .form .row { grid-template-columns: repeat(2, minmax(0, 1fr)); }

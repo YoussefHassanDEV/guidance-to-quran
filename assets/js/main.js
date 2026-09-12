@@ -9,6 +9,7 @@
     name: "Hedaya Academy",
     tagline: "Online Quran Academy",
     motto: "Where the Quran meets your family's journey",
+    instagram: "hedaya__academy",       // public handle, used by the Instagram section
     phoneDisplay: "+20 11 5784 3587",
     phoneIntl: "201157843587",           // digits only, used for WhatsApp / tel:
     email: "hello@hedayaacademy.example",
@@ -73,6 +74,21 @@
   /* ------------------------------------------------------------------
      Data
   ------------------------------------------------------------------ */
+
+  /* Public posts from instagram.com/hedaya__academy (captions as published, hashtags removed).
+     `embed: true` renders the official Instagram player for that reel. */
+  const INSTAGRAM = [
+    { code: "DFabCtzNR3L", type: "reel", date: "2025-01-29", embed: true, text: "Alhamdulillah, students are telling their experience with Hedaya Academy, may Allah guide them." },
+    { code: "DF1MFYTtxi4", type: "reel", date: "2025-02-08", embed: true, text: "Mashallah, Hedaya Academy has success stories worldwide 🌎 all praise be to Allah, Alhamdulillah. Enroll today!" },
+    { code: "DdE6xA3ROS4", type: "reel", date: "2026-09-09", text: "The student asks: why do I sometimes forget how many rak'ahs I have prayed? The answer is paying attention, and changing the surahs you recite." },
+    { code: "DdB3hzjNgxh", type: "reel", date: "2026-09-08", text: "Explaining how the Prophet ﷺ used to pray lengthy night prayers, standing for hours with prolonged recitation, deep reflection and heartfelt supplication until his feet swelled." },
+    { code: "DdBvdvUt2KT", type: "reel", date: "2026-09-08", text: "Tafseer of Surah Al-Fatiha: notice how the surah ends with the people who went astray, the people Allah is angry with, and the people Allah has blessed. May Allah make us from them 🤲" },
+    { code: "DdBuEwXtB-u", type: "reel", date: "2026-09-08", text: "🌙 The story of Prophet Danyal (Daniel) عليه السلام, and how similar it is to Prophet Yusuf: both interpreted dreams. Islamic Studies for kids." },
+    { code: "DdAUPrbC4GI", type: "reel", date: "2026-09-07", text: "Part of a session discussing the signs of the Day of Judgement. The Prophet ﷺ warned us not to terrify us but to prepare us: check your prayers, mend your character and turn back to Allah." },
+    { code: "Dc_MeNwN762", type: "reel", date: "2026-09-07", text: "🧸 Arabic made fun for kids! 🎉" },
+    { code: "Dc9YHc1x02Y", type: "post", date: "2026-09-06", text: "🌟 Now you can learn Fiqh, Sunnah and Hadith in our advanced Islamic Studies bundle. Start your journey today! 📖✨" },
+    { code: "Dc9eVHaRvxQ", type: "post", date: "2026-09-06", text: "Make sure you use your time wisely, and never forget why Allah created you. Life is temporary, and every moment is an opportunity to come closer to Allah, do good and prepare for the Hereafter." }
+  ];
   const COURSES = [
     { id: "qaida", title: "Noorani Qaida", cat: "quran", level: "Beginner", age: "4+", weeks: "3–6 months", theme: "t-blue", ar: "ق",
       blurb: "The foundation of Quran reading. Learn the Arabic alphabet, harakat, sukoon, tanween and joining letters with correct pronunciation.",
@@ -521,6 +537,24 @@
   /* ------------------------------------------------------------------
      Testimonials scroller
   ------------------------------------------------------------------ */
+
+  function initInstagram() {
+    const grid = $("#ig-grid"); if (!grid) return;
+    const url = (p) => `https://www.instagram.com/${p.type === "reel" ? "reel" : "p"}/${p.code}/`;
+    const when = (d) => new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    const embeds = INSTAGRAM.filter((p) => p.embed), posts = INSTAGRAM.filter((p) => !p.embed);
+    const embedWrap = $("#ig-embeds");
+    if (embedWrap) {
+      embedWrap.innerHTML = embeds.map((p) => `<div class="ig-embed reveal"><blockquote class="instagram-media" data-instgrm-permalink="${url(p)}" data-instgrm-version="14"><a href="${url(p)}" target="_blank" rel="noopener">${esc(p.text)}</a></blockquote></div>`).join("");
+      const s = document.createElement("script"); s.src = "https://www.instagram.com/embed.js"; s.async = true; document.body.appendChild(s);
+    }
+    grid.innerHTML = posts.map((p) => `<a class="card ig-card reveal" href="${url(p)}" target="_blank" rel="noopener" aria-label="Open this ${p.type} on Instagram">
+      <div class="ig-head"><span class="ig-logo">${ICONS.ig}</span><span><strong>@${SITE.instagram}</strong><small>${p.type === "reel" ? "Reel" : "Post"} · ${when(p.date)}</small></span></div>
+      <p>${esc(p.text)}</p>
+      <span class="ig-more">${p.type === "reel" ? "Watch on Instagram" : "View on Instagram"} ${ICONS.arrow}</span>
+    </a>`).join("");
+  }
+
   function initTestimonials() {
     const track = $(".testi-track"); if (!track) return;
     const prev = $("#testi-prev"), next = $("#testi-next");
@@ -848,7 +882,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     renderHeader(); renderFooter();
     initAvatars();
-    initCourses(); initPricing(); initTestimonials(); initForm();
+    initCourses(); initPricing(); initTestimonials(); initInstagram(); initForm();
     initReveal(); initCounters(); initEffects(); initUX(); initArt(); initSparkles();
     // Smooth-scroll for in-page anchors with sticky offset
     document.addEventListener("click", (e) => { const a = e.target.closest('a[href^="#"]'); if (!a || a.getAttribute("href") === "#") return; const t = document.getElementById(a.getAttribute("href").slice(1)); if (t) { e.preventDefault(); const hdr = $(".header"), y = t.getBoundingClientRect().top + window.scrollY - ((hdr ? hdr.offsetHeight : 74) + 16); window.scrollTo({ top: y, behavior: "smooth" }); } });
